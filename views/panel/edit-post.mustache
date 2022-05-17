@@ -1,0 +1,85 @@
+{{>panel/include/header}}
+
+<div class="container pt-20 panel">
+    <div class="grid grid-cols-12 gap-5 py-10 items-start">
+        {{>panel/include/right-side}}
+        <div class="panel__left-side">
+            <div class="flex flex-col md:flex-row gap-5 items-center justify-between mb-3">
+                <h4 class="font-bold text-xl">ویرایش مطلب</h4>
+            </div>
+            <div>
+                <form action="#">
+                    <div class="mb-5">
+                        <label>
+                            عنوان مطلب
+                            <input type="text" class="input input-bordered w-full mt-1">
+                        </label>
+                    </div>
+
+                    <div class="mb-5">
+                        <label>
+                            دسته بندی
+                            <select class="select select-bordered w-full mt-1">
+                                <option>دسته بندی ۱</option>
+                                <option>دسته بندی ۲</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="mb-5">
+                        مطلب
+                        <div id="froala-editor"></div>
+                    </div>
+
+
+                    <div class="mb-5">
+                        ادامه مطلب
+                        <div id="read-more-editor"></div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label>
+                            برچسب ها
+                            <input type="text" class="input input-bordered w-full mt-1">
+                        </label>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="label cursor-pointer justify-start gap-x-5">
+                            <span class="label-text">امکان افزودن نظر؟</span>
+                            <input type="checkbox" checked="checked" class="checkbox checkbox-primary">
+                        </label>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="label cursor-pointer justify-start gap-x-5">
+                            <span class="label-text">نمایش فقط برای اعضا؟</span>
+                            <input type="checkbox" checked="checked" class="checkbox checkbox-primary">
+                        </label>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary">ویرایش</button>
+                    <button type="reset" class="btn btn-error">پاک کردن</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/froala-editor/4.0.10/js/froala_editor.pkgd.min.js'></script>
+<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/4.0.10/js/languages/fa.min.js"></script>
+<script>
+    var editor = new FroalaEditor('#froala-editor', {
+        language: 'fa',
+        height: 200
+    });
+
+    var editor = new FroalaEditor('#read-more-editor', {
+        language: 'fa',
+        height: 300
+    });
+</script>
+</body>
+</html>

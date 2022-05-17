@@ -1,0 +1,30 @@
+{{>include/header}}
+
+    <div class="login-wrap">
+        <div class="login-form">
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <label for="email">ایمیل:</label>
+                    <input type="email" name="email" id="email" placeholder="ایمیل">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">پسورد:</label>
+                    <input type="password" name="password" id="password" placeholder="پسورد">
+                </div>
+                <div>
+                    <button type="submit">ورود</button>
+                </div>
+                <div class="mt-5">
+                    <a href="#">عضویت</a> | <a href="#">فراموشی رمز عبور</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/libs/slick/slick.min.js"></script>
+    <script src="/home.script.js"></script>
+</body>
+
+</html>
