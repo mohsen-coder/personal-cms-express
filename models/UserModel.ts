@@ -8,11 +8,11 @@ class UserModel extends Model<InferAttributes<UserModel>, InferCreationAttribute
     declare email: string
     declare password: string
 
-    static async getUserById(userId: string): Promise<UserModel | null> {
+    static async findUserById(userId: string): Promise<UserModel | null> {
         return UserModel.findOne({ where: { id: userId } })
     }
 
-    static async getUserByEmail(email: string): Promise<UserModel | null> {
+    static async findUserByEmail(email: string): Promise<UserModel | null> {
         return UserModel.findOne({ where: { email: email } })
     }
 }
