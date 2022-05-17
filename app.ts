@@ -8,6 +8,7 @@ import {database, DBSyncer} from './config/Database'
 import { registerRouter } from './router/RegisterRouter';
 import { indexRouter } from './router/IndexRouter';
 import { loginRouter } from './router/LoginRouter';
+import { panelRouter } from './router/PanelRouter';
 
 
 (async () => {
@@ -32,6 +33,7 @@ import { loginRouter } from './router/LoginRouter';
     app.use(indexRouter)
     app.use(registerRouter)
     app.use(loginRouter)
+    app.use(panelRouter)
 
 
     try {
