@@ -30,6 +30,8 @@ export class LoginController {
             return response
         }
 
+        this.request.session.isLogin = true
+
         response.messages.push('با موفقیت وارد شدید!')
         response.status = ResponseStatus.success
 
