@@ -1,16 +1,16 @@
 import { ILoginController } from "../interfaces/ILoginController";
 import { UserModel } from "../models/UserModel";
-import { LoginRequest } from "../request/LoginRequest";
+import { LoginPostRequest } from "../request/LoginPostRequest";
 import { ResponseBase } from "../response/ResponseBase";
 import { ResponseStatus } from "../response/ResponseStatus";
 import { HashUtil } from "../utils/HashUtil";
 
 export class LoginController implements ILoginController{
 
-    private request: LoginRequest
+    private request: LoginPostRequest
     private model: typeof UserModel
 
-    constructor(request: LoginRequest, model: typeof UserModel) {
+    constructor(request: LoginPostRequest, model: typeof UserModel) {
         this.request = request
         this.model = model
     }
@@ -18,7 +18,7 @@ export class LoginController implements ILoginController{
     async loginUser(): Promise<ResponseBase> {
         const response = new ResponseBase()
 
-        const user = await this.model.getUserByEmail(this.request.email)
+        const user = await this.model.findUserByEmail(this.request.email)
         if (user === null) {
             response.messages.push('شما هنوز ثبت نام نکردید!')
             response.status = ResponseStatus.error

@@ -2,12 +2,12 @@ import {Request, Response} from 'express'
 import { LoginController } from '../controllers/LoginController'
 import { RouteHelper } from '../helper/RouteHelper'
 import { UserModel } from '../models/UserModel'
-import { LoginRequest } from '../request/LoginRequest'
+import { LoginPostRequest } from '../request/LoginPostRequest'
 import { redirectWithMessage } from '../utils/RedirectUtil'
 
 export const LoginPost = async (req: Request, res: Response) => {
-    const loginRequest = new LoginRequest(req.body, req.session)
-    const controller = new LoginController(loginRequest, UserModel)
+    const loginPostRequest = new LoginPostRequest(req.body, req.session)
+    const controller = new LoginController(loginPostRequest, UserModel)
     const response = await controller.loginUser()
 
     if(response.status === "error") 

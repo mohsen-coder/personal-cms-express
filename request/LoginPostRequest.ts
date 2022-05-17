@@ -1,5 +1,5 @@
 import {Session, SessionData} from "express-session"
-export class LoginRequest {
+export class LoginPostRequest {
 
     email: string = ''
     password: string = ''
