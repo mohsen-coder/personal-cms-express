@@ -1,4 +1,4 @@
-import { RegisterRequest } from "../request/RegisterRequest";
+import { RegisterPostRequest } from "../request/RegisterPostRequest";
 import { UserModel } from "../models/UserModel";
 import { ResponseBase } from "../response/ResponseBase";
 import { ResponseStatus } from "../response/ResponseStatus";
@@ -7,16 +7,16 @@ import { IRegisterController } from "../interfaces/IRegisterController";
 
 export class RegisterController implements IRegisterController {
 
-    private request: RegisterRequest 
+    private request: RegisterPostRequest 
     private model: typeof UserModel
 
-    constructor(request: RegisterRequest, model: typeof UserModel) {
+    constructor(request: RegisterPostRequest, model: typeof UserModel) {
         this.request = request;
         this.model = model
     }
 
     private async checkUserExistOrNot(): Promise<boolean> {
-        const user = await this.model.getUserByEmail(this.request.email)
+        const user = await this.model.findUserByEmail(this.request.email)
         return user !== null
     }
 
