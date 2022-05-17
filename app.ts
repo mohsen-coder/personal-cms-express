@@ -1,10 +1,13 @@
 import path from 'path';
-import express, { Request, Response } from 'express'
+import express from 'express'
 import bodyParser from 'body-parser';
 import mustacheExpress from 'mustache-express';
 import session from 'express-session'
 import connectSequelize from 'connect-session-sequelize'
 import {database, DBSyncer} from './config/Database'
+import { registerRouter } from './router/RegisterRouter';
+import { indexRouter } from './router/IndexRouter';
+import { loginRouter } from './router/LoginRouter';
 
 
 (async () => {
@@ -23,6 +26,12 @@ import {database, DBSyncer} from './config/Database'
         resave: false,
         saveUninitialized: false
     }))
+
+
+    // routes
+    app.use(indexRouter)
+    app.use(registerRouter)
+    app.use(loginRouter)
 
 
     try {
