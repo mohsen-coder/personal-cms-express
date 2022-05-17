@@ -3,5 +3,6 @@ export enum RouteHelper {
     register = "/register",
     login = "/login",
     contactUs = "/contact-us",
-    panel = "/panel"
+    panel = "/panel",
+    categories = "/panel/categories",
 }
