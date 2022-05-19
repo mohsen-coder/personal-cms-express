@@ -1,11 +1,10 @@
-import { ILoginController } from "../interfaces/ILoginController";
 import { UserModel } from "../models/UserModel";
 import { LoginPostRequest } from "../request/LoginPostRequest";
 import { ResponseBase } from "../response/ResponseBase";
 import { ResponseStatus } from "../response/ResponseStatus";
 import { HashUtil } from "../utils/HashUtil";
 
-export class LoginController implements ILoginController{
+export class LoginController {
 
     private request: LoginPostRequest
     private model: typeof UserModel
