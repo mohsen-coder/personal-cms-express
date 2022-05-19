@@ -22,113 +22,35 @@
                     </thead>
                     <tbody>
                     <!-- row 1 -->
-                    <tr>
-                        <td>
-                            <input type="checkbox" checked="checked" class="checkbox checkbox-primary">
-                        </td>
-                        <td>
-                            <div class="flex items-center space-x-3">
-                                <div class="avatar">
-                                    <div class="mask mask-squircle w-12 h-12">
-                                        <img src="https://api.lorem.space/image/face?hash=92048"
-                                             alt="Avatar Tailwind CSS Component"/>
+                    {{#categories}}
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="checkbox checkbox-primary">
+                            </td>
+                            <td>
+                                <div class="flex items-center space-x-3">
+                                    <!--<div class="avatar">
+                                        <div class="mask mask-squircle w-12 h-12">
+                                            <img src="https://api.lorem.space/image/face?hash=92048"
+                                                 alt="Avatar Tailwind CSS Component"/>
+                                        </div>
+                                    </div>-->
+                                    <div>
+                                        <div class="font-bold mr-2">{{title}}</div>
                                     </div>
                                 </div>
-                                <div>
-                                    <div class="font-bold mr-2">عنوان دسته بندی</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            عنوان پدر
-                        </td>
-                        <th>
-                            <button class="btn btn-info btn-xs">مشاهده</button>
-                            <label for="my-modal" class="btn btn-warning btn-xs">ویرایش</label>
-                            <a href="#my-modal-2" class="btn btn-error btn-xs">حذف</a>
-                        </th>
-                    </tr>
-                    <!-- row 2 -->
-                    <tr>
-                        <td>
-                            <input type="checkbox" checked="checked" class="checkbox checkbox-primary">
-                        </td>
-                        <td>
-                            <div class="flex items-center space-x-3">
-                                <div class="avatar">
-                                    <div class="mask mask-squircle w-12 h-12">
-                                        <img src="https://api.lorem.space/image/face?hash=92048"
-                                             alt="Avatar Tailwind CSS Component"/>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="font-bold mr-2">عنوان دسته بندی</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            عنوان پدر
-                        </td>
-                        <th>
-                            <button class="btn btn-info btn-xs">مشاهده</button>
-                            <label for="my-modal" class="btn btn-warning btn-xs">ویرایش</label>
-                            <a href="#my-modal-2" class="btn btn-error btn-xs">حذف</a>
-                        </th>
-                    </tr>
-                    <!-- row 3 -->
-                    <tr>
-                        <td>
-                            <input type="checkbox" checked="checked" class="checkbox checkbox-primary">
-                        </td>
-                        <td>
-                            <div class="flex items-center space-x-3">
-                                <div class="avatar">
-                                    <div class="mask mask-squircle w-12 h-12">
-                                        <img src="https://api.lorem.space/image/face?hash=92048"
-                                             alt="Avatar Tailwind CSS Component"/>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="font-bold mr-2">عنوان دسته بندی</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            عنوان پدر
-                        </td>
-                        <th>
-                            <button class="btn btn-info btn-xs">مشاهده</button>
-                            <label for="my-modal" class="btn btn-warning btn-xs">ویرایش</label>
-                            <a href="#my-modal-2" class="btn btn-error btn-xs">حذف</a>
-                        </th>
-                    </tr>
-                    <!-- row 4 -->
-                    <tr>
-                        <td>
-                            <input type="checkbox" checked="checked" class="checkbox checkbox-primary">
-                        </td>
-                        <td>
-                            <div class="flex items-center space-x-3">
-                                <div class="avatar">
-                                    <div class="mask mask-squircle w-12 h-12">
-                                        <img src="https://api.lorem.space/image/face?hash=92048"
-                                             alt="Avatar Tailwind CSS Component"/>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="font-bold mr-2">عنوان دسته بندی</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            عنوان پدر
-                        </td>
-                        <th>
-                            <button class="btn btn-info btn-xs">مشاهده</button>
-                            <label for="my-modal" class="btn btn-warning btn-xs">ویرایش</label>
-                            <a href="#my-modal-2" class="btn btn-error btn-xs">حذف</a>
-                        </th>
-                    </tr>
+                            </td>
+                            <td>
+                                عنوان پدر
+                            </td>
+                            <th>
+                                <button class="btn btn-info btn-xs">مشاهده</button>
+                                <label for="my-modal" class="btn btn-warning btn-xs">ویرایش</label>
+                                <a href="#my-modal-2" class="btn btn-error btn-xs">حذف</a>
+                            </th>
+                        </tr>
+                    {{/categories}}
+
                     </tbody>
 
                 </table>
@@ -147,7 +69,6 @@
             </div>
 
 
-
         </div>
     </div>
 </div>
@@ -156,20 +77,22 @@
 <input type="checkbox" id="my-modal" class="modal-toggle">
 <div class="modal">
     <div class="modal-box overflow-hidden">
-<!--        <h3 class="font-bold text-lg mb-3">ا</h3>-->
-        <form action="/panel/category/new" method="post">
+        <!--        <h3 class="font-bold text-lg mb-3">ا</h3>-->
+        <form action="/panel/categories" method="post">
             <div class="flex flex-col md:flex-row gap-5">
                 <select class="select select-bordered basis-full md:basis-1/2" name="parentCategory">
                     <option disabled selected>دسته بندی پدر</option>
-                    <option>دسته بندی ۱</option>
-                    <option>دسته بندی ۲</option>
+                    {{#categories}}
+                        <option value="{{id}}">{{title}}</option>
+                    {{/categories}}
                 </select>
-                <input type="text" name="title" placeholder="عنوان دسته بندی جدید" class="input input-bordered basis-full md:basis-1/2 py-3 md:py-0">
+                <input type="text" name="title" placeholder="عنوان دسته بندی جدید"
+                       class="input input-bordered basis-full md:basis-1/2 py-3 md:py-0">
             </div>
-        <div class="modal-action">
-            <button type="submit" for="my-modal" class="btn">ایجاد</button>
-            <label for="my-modal" class="btn">بستن</label>
-        </div>
+            <div class="modal-action">
+                <button type="submit" for="my-modal" class="btn">ایجاد</button>
+                <label for="my-modal" class="btn">بستن</label>
+            </div>
         </form>
     </div>
 </div>
