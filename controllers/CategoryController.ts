@@ -3,7 +3,6 @@ import {CategoryDeleteRequest} from "../request/CategoryDeleteRequest";
 import {CategoryPutRequest} from "../request/CategoryPutRequest";
 import {CategoryGetRequest} from "../request/CategoryGetRequest";
 import {CategoryPostRequest} from "../request/CategoryPostRequest";
-import {CategoryGetResponse} from "../response/CategoryGetResponse";
 import {ResponseBase} from "../response/ResponseBase";
 import {ResponseStatus} from "../response/ResponseStatus";
 import {values} from "../values/vlaues";
@@ -26,15 +25,15 @@ export class CategoryController {
             return response
         }
 
-        this.model.create({...request})
+        await this.model.create({...request})
 
         response.messages.push(values.category.singleCreateSuccess)
         response.status = ResponseStatus.success
         return response
     }
 
-    private async fetchSingleCategory(data: string, isTitle: boolean): Promise<CategoryGetResponse> {
-        const categoryResponse = new CategoryGetResponse()
+    private async fetchSingleCategory(data: string, isTitle: boolean): Promise<ResponseBase> {
+        const responseBase = new ResponseBase()
         let category = null
 
         if (isTitle)
@@ -43,25 +42,25 @@ export class CategoryController {
             category = await this.model.findCategoryById(data);
 
         if (!category) {
-            categoryResponse.messages.push(values.category.singleNotExistErr)
-            categoryResponse.status = ResponseStatus.error
-            return categoryResponse
+            responseBase.messages.push(values.category.singleNotExistErr)
+            responseBase.status = ResponseStatus.error
+            return responseBase
         }
 
-        categoryResponse.category = category
-        categoryResponse.messages.push(values.category.singleReadSuccess)
-        categoryResponse.status = ResponseStatus.success
-        return categoryResponse
+        responseBase.data = category
+        responseBase.messages.push(values.category.singleReadSuccess)
+        responseBase.status = ResponseStatus.success
+        return responseBase
     }
 
 
-    async getCategory(request: CategoryGetRequest): Promise<CategoryGetResponse> {
+    async getCategory(request: CategoryGetRequest): Promise<ResponseBase> {
 
         if (request.id) return this.fetchSingleCategory(request.id, false);
 
         if (request.title) return this.fetchSingleCategory(request.title, true);
 
-        const categoryResponse = new CategoryGetResponse()
+        const responseBase = new ResponseBase()
         let categories = null
         if (request.pagination && request.pagination.limit > 0) {
             categories = await this.model.findAll({offset: request.pagination.offset, limit: request.pagination.limit})
@@ -69,10 +68,10 @@ export class CategoryController {
             categories = await this.model.findAll()
         }
 
-        categoryResponse.categories = categories
-        categoryResponse.messages.push(values.category.multiReadSuccess)
-        categoryResponse.status = ResponseStatus.success
-        return categoryResponse
+        responseBase.data = categories
+        responseBase.messages.push(values.category.multiReadSuccess)
+        responseBase.status = ResponseStatus.success
+        return responseBase
     }
 
     async updateCategory(request: CategoryPutRequest): Promise<ResponseBase> {
