@@ -1,4 +1,3 @@
-import { ICategoryController } from "../interfaces/ICategoryController";
 import { CategoryModel } from "../models/CategoryModel";
 import { CategoryDeleteRequest } from "../request/CategoryDeleteRequest"; 
 import { CategoryPutRequest } from "../request/CategoryPutRequest"; 
@@ -8,7 +7,7 @@ import { CategoryGetResponse } from "../response/CategoryGetResponse";
 import { ResponseBase } from "../response/ResponseBase";
 import { ResponseStatus } from "../response/ResponseStatus";
 
-export class CategoryController implements ICategoryController {
+export class CategoryController {
 
     private model: typeof CategoryModel
 
