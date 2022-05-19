@@ -47,7 +47,7 @@ export class CategoryController {
             return responseBase
         }
 
-        responseBase.data = category
+        responseBase.data = {  category }
         responseBase.messages.push(values.category.singleReadSuccess)
         responseBase.status = ResponseStatus.success
         return responseBase
@@ -68,7 +68,7 @@ export class CategoryController {
             categories = await this.model.findAll()
         }
 
-        responseBase.data = categories
+        responseBase.data = { categories }
         responseBase.messages.push(values.category.multiReadSuccess)
         responseBase.status = ResponseStatus.success
         return responseBase
