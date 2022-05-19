@@ -1,11 +1,12 @@
-import { CategoryModel } from "../models/CategoryModel";
-import { CategoryDeleteRequest } from "../request/CategoryDeleteRequest"; 
-import { CategoryPutRequest } from "../request/CategoryPutRequest"; 
-import { CategoryGetRequest } from "../request/CategoryGetRequest"; 
-import { CategoryPostRequest } from "../request/CategoryPostRequest"; 
-import { CategoryGetResponse } from "../response/CategoryGetResponse"; 
-import { ResponseBase } from "../response/ResponseBase";
-import { ResponseStatus } from "../response/ResponseStatus";
+import {CategoryModel} from "../models/CategoryModel";
+import {CategoryDeleteRequest} from "../request/CategoryDeleteRequest";
+import {CategoryPutRequest} from "../request/CategoryPutRequest";
+import {CategoryGetRequest} from "../request/CategoryGetRequest";
+import {CategoryPostRequest} from "../request/CategoryPostRequest";
+import {CategoryGetResponse} from "../response/CategoryGetResponse";
+import {ResponseBase} from "../response/ResponseBase";
+import {ResponseStatus} from "../response/ResponseStatus";
+import {values} from "../values/vlaues";
 
 export class CategoryController {
 
@@ -20,14 +21,14 @@ export class CategoryController {
 
         const category = await this.model.findCategoryByTitle(request.title)
         if (category) {
-            response.messages.push('دسته بندی موجود می باشد!')
+            response.messages.push(values.category.singleExistErr)
             response.status = ResponseStatus.error
             return response
         }
 
-        this.model.create({ ...request })
+        this.model.create({...request})
 
-        response.messages.push('دسته بندی با موفقیت ایجاد شد.')
+        response.messages.push(values.category.singleCreateSuccess)
         response.status = ResponseStatus.success
         return response
     }
@@ -42,13 +43,13 @@ export class CategoryController {
             category = await this.model.findCategoryById(data);
 
         if (!category) {
-            categoryResponse.messages.push('دسته بندی موجود نیست!')
+            categoryResponse.messages.push(values.category.singleNotExistErr)
             categoryResponse.status = ResponseStatus.error
             return categoryResponse
         }
 
         categoryResponse.category = category
-        categoryResponse.messages.push('دسته بندی با موفقیت دریافت شد.')
+        categoryResponse.messages.push(values.category.singleReadSuccess)
         categoryResponse.status = ResponseStatus.success
         return categoryResponse
     }
@@ -63,13 +64,13 @@ export class CategoryController {
         const categoryResponse = new CategoryGetResponse()
         let categories = null
         if (request.pagination && request.pagination.limit > 0) {
-            categories = await this.model.findAll({ offset: request.pagination.offset, limit: request.pagination.limit })
-        }else {
+            categories = await this.model.findAll({offset: request.pagination.offset, limit: request.pagination.limit})
+        } else {
             categories = await this.model.findAll()
         }
 
         categoryResponse.categories = categories
-        categoryResponse.messages.push('دسته بندی ها با موفقیت دریافت شد.')
+        categoryResponse.messages.push(values.category.multiReadSuccess)
         categoryResponse.status = ResponseStatus.success
         return categoryResponse
     }
@@ -78,15 +79,15 @@ export class CategoryController {
         const response = new ResponseBase()
 
         const category = await this.model.findCategoryById(request.id)
-        if(!category){
-            response.messages.push('دسته بندی موجود نیست!')
+        if (!category) {
+            response.messages.push(values.category.singleNotExistErr)
             response.status = ResponseStatus.error
             return response
         }
 
         await this.model.update({title: request.title}, {where: {id: request.id}})
-        
-        response.messages.push('دسته بندی با موفقیت ویرایش شد.')
+
+        response.messages.push(values.category.singleUpdateSuccess)
         response.status = ResponseStatus.success
         return response
     }
@@ -95,15 +96,15 @@ export class CategoryController {
         const response = new ResponseBase()
 
         const category = await this.model.findCategoryById(request.categoryId)
-        if(!category){
-            response.messages.push('دسته بندی موجود نیست!')
+        if (!category) {
+            response.messages.push(values.category.singleNotExistErr)
             response.status = ResponseStatus.error
             return response
         }
 
         await this.model.destroy({where: {id: request.categoryId}})
 
-        response.messages.push('دسته بندی با موفقیت حذف شد.')
+        response.messages.push(values.category.singleDeleteSuccess)
         response.status = ResponseStatus.success
         return response
     }
