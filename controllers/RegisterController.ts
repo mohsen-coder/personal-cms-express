@@ -3,11 +3,10 @@ import { UserModel } from "../models/UserModel";
 import { ResponseBase } from "../response/ResponseBase";
 import { ResponseStatus } from "../response/ResponseStatus";
 import { HashUtil } from "../utils/HashUtil";
-import { IRegisterController } from "../interfaces/IRegisterController";
 
-export class RegisterController implements IRegisterController {
+export class RegisterController {
 
-    private request: RegisterPostRequest 
+    private readonly request: RegisterPostRequest
     private model: typeof UserModel
 
     constructor(request: RegisterPostRequest, model: typeof UserModel) {
@@ -31,7 +30,7 @@ export class RegisterController implements IRegisterController {
 
         this.request.password = await HashUtil.hashPassword(this.request.password)
         
-        this.model.create({...this.request})
+        await this.model.create({...this.request})
 
         response.messages.push('کاربر با موفقیت ثبت شد!')
         response.status = ResponseStatus.success
