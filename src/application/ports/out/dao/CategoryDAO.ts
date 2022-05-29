@@ -1,5 +1,9 @@
 export class CategoryDAO {
-    id: string | null = null
-    parentId: string | null = null
-    title: string | null = null
+    id?: string
+    parentId?: string
+    title!: string
+
+    constructor(init: object){
+        Object.assign(this, init)
+    }
 }

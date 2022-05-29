@@ -1,7 +1,12 @@
 export class FileDAO {
-    id: string | null = null
-    size: string | null = null
-    title: string | null = null
-    meme: string | null = null
-    fileType: string | null = null
+    id?: string
+    size!: string
+    title!: string
+    meme!: string
+    fileType!: string
+    createAt?: string
+
+    constructor(init: object) {
+        Object.assign(this, init)
+    }
 }

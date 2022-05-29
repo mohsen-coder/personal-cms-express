@@ -1,8 +1,15 @@
 export class CommentDAO {
-    id: string | null = null
-    email: string | null = null
-    name: string | null = null
-    content: string | null = null
-    createDate: number | null = null
-    replies: string[] | null = null
+    id?: string
+    email!: string
+    name!: string
+    content!: string
+    parentId?: { id: string }
+    postId!: string
+    status!: string
+    createAt?: Date
+    updateAt?: Date
+
+    constructor(init: object) {
+        Object.assign(this, init)
+    }
 }
