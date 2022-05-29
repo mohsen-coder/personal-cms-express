@@ -1,9 +1,11 @@
 export class EditAccountRequest {
-    id: string = ""
-    name: string | null = null
-    family: string | null = null
-    email: string | null = null
-    password: string | null = null
-    role: string | null = null
-    about: string | null = null
+    id!: string
+    name!: string
+    family!: string
+    email!: string
+    username!: string
+    password!: string
+    about?: string
+    thumbnail?: {id: string}
+    role!: string
 }
