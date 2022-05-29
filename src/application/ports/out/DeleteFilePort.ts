@@ -1,3 +1,3 @@
 export interface DeleteFilePort {
-    deleteFile(fileId: string): boolean
+    deleteFile(fileId: string): Promise<boolean>
 }
