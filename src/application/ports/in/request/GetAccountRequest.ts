@@ -1,4 +1,6 @@
 export class GetAccountRequest {
-    id: string | null = null
-    pagination: {offset: number, limit: number} | null = null
+    id?: string
+    username?: string
+    email?: string
+    pagination?: {offset: number, limit: number}
 }
