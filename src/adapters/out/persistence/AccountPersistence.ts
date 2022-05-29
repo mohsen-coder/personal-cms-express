@@ -49,8 +49,22 @@ export class AccountPersistence implements CreateAccountPort, GetAccountPort, Up
         return null;
     }
 
+    async getAccountByUsername(username: string): Promise<AccountDAO | null> {
+
+        const account = await this.accountModel.findOne({ where: { username: username } })
+
+        if (account) return new AccountDAO(account);
+
+        return null;
+    }
+
     async getAccountByRole(role: string): Promise<AccountDAO[]> {
         const accounts = await this.accountModel.find({ where: { role: role } })
+        return accounts.map(account => new AccountDAO(account));
+    }
+
+    async getAccounts(offset: number, limit: number): Promise<AccountDAO[]>{
+        const accounts = await this.accountModel.find({ skip: offset, take: limit})
         return accounts.map(account => new AccountDAO(account));
     }
 
