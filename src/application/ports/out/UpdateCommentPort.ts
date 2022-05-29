@@ -1,5 +1,5 @@
-import {CommentDAO} from "./dao/CommentDAO";
+import { CommentDAO } from "./dao/CommentDAO";
 
 export interface UpdateCommentPort {
-    updateComment(comment: CommentDAO): CommentDAO
+    updateComment(comment: CommentDAO): Promise<CommentDAO | null>
 }

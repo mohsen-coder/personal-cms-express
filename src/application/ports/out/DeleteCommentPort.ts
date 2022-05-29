@@ -1,3 +1,3 @@
 export interface DeleteCommentPort {
-    deleteComment(commentId: string): boolean
+    deleteComment(commentId: string): Promise<boolean>
 }

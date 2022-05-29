@@ -1,11 +1,7 @@
 import {PostDAO} from "./dao/PostDAO";
 
 export interface GetPostPort {
-    getPostById(postId: string): PostDAO
+    getPostById(postId: string): Promise<PostDAO | null>
 
-    getPostsByViews(postId: string): PostDAO[]
-
-    getPostsByLikes(postId: string): PostDAO[]
-
-    getPosts(offset: number, limit: number): PostDAO[]
+    getPosts(offset: number, limit: number): Promise<PostDAO[]>
 }

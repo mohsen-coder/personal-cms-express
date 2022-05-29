@@ -1,9 +1,9 @@
-import {CategoryDAO} from "./dao/CategoryDAO";
+import { CategoryDAO } from "./dao/CategoryDAO";
 
 export interface GetCategoryPort {
-    getCategoryById(categoryId: string): CategoryDAO
+    getCategoryById(categoryId: string): Promise<CategoryDAO | null>
 
-    getCategoryByTitle(categoryTitle: string): CategoryDAO
+    getCategoryByTitle(categoryTitle: string): Promise<CategoryDAO | null>
 
-    getCategoriesByParentId(parentId: string): CategoryDAO[]
+    getCategoriesByParentId(parentId: string): Promise<CategoryDAO[]>
 }

@@ -1,3 +1,3 @@
 export interface DeleteCategoryPort {
-    deleteCategory(categoryId: string): boolean
+    deleteCategory(categoryId: string): Promise<boolean>
 }
