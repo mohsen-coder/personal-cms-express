@@ -2,5 +2,5 @@ import {NewCommentRequest} from "./request/NewCommentRequest";
 import {CommentResponse} from "./response/CommentResponse";
 
 export interface CreateCommentUseCase {
-    createComment(request: NewCommentRequest): CommentResponse
+    createComment(request: NewCommentRequest): Promise<CommentResponse>
 }
