@@ -1,37 +1,38 @@
 import {RegisterUseCase} from "../ports/in/RegisterUseCase";
 import {CreateAccountPort} from "../ports/out/CreateAccountPort";
-import {RegisterRequest} from "../ports/in/request/RegisterRequest";
 import {ResponseBase} from "../ports/in/response/ResponseBase";
 import {Account} from "../../domain/Account";
-import {AccountRole} from "../../domain/AccountRole";
 import {GetAccountPort} from "../ports/out/GetAccountPort";
 import {ResponseStatus} from "../ports/in/response/ResponseStatus";
 import {Messages} from "../../../values/Messages";
+import {Bcrypt} from "../../utils/Bcrypt";
 
 export class CreateAccountService implements RegisterUseCase {
 
-    private readonly createAccount: CreateAccountPort
-    private readonly getAccount: GetAccountPort
 
-    constructor(createAccount: CreateAccountPort, getAccount: GetAccountPort) {
-        this.createAccount = createAccount;
-        this.getAccount = getAccount;
+    constructor(
+        private readonly createAccountRepo: CreateAccountPort,
+        private readonly getAccountRepo: GetAccountPort,
+        private readonly BcryptUtil: typeof Bcrypt
+    ) {
     }
 
-    async register(request: RegisterRequest): Promise<ResponseBase> {
+    async register(accountArg: Account): Promise<ResponseBase> {
 
-        const account = new Account(request)
-        account.role = AccountRole.user
-
-        const usernameExist = await this.getAccount.getAccountByUsername(account.username)
-        const emailExist = await this.getAccount.getAccountByEmail(account.email)
+        const emailExist = await this.getAccountRepo.getAccountByEmail(accountArg.email!)
+        const username = await this.getAccountRepo.getAccountByUsername(accountArg.username!)
 
         const response = new ResponseBase()
-        if (usernameExist || emailExist) {
+
+        if (emailExist || username) {
             response.status = ResponseStatus.error;
-            response.messages.push(Messages.account.create.AccountExistError.fa)
+            response.messages.push(Messages.account.get.ExistError.fa)
             return response;
         }
+
+        accountArg.password = this.BcryptUtil.hashPassword(accountArg.password!)
+
+        await this.createAccountRepo.createAccount(accountArg)
 
         response.status = ResponseStatus.success;
         response.messages.push(Messages.account.create.Success.fa)

@@ -1,5 +1,5 @@
-import {CategoryDAO} from "./dao/CategoryDAO";
+import {Category} from "../../../domain/Category";
 
 export interface CreateCategoryPort{
-    createCategory(category: CategoryDAO): Promise<CategoryDAO>
+    createCategory(category: Category): Promise<Category>
 }

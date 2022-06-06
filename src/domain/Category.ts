@@ -1,9 +1,7 @@
 export class Category {
-    id: string = ""
-    parentId: string = ""
-    title: string = ""
-
-    constructor(init: object | null) {
-        init && Object.assign(this, init)
-    }
+    id?: string
+    parentId?: string
+    title!: string
+    createAt?: Date
+    updateAt?: Date
 }

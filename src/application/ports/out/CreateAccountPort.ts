@@ -1,5 +1,5 @@
-import {AccountDAO} from "./dao/AccountDAO";
+import {Account} from "../../../domain/Account";
 
 export interface CreateAccountPort {
-    createAccount(account: AccountDAO): Promise<AccountDAO>
+    createAccount(account: Account): Promise<Account | null>
 }

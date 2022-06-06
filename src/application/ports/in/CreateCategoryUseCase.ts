@@ -1,6 +1,6 @@
-import {NewCategoryRequest} from "./request/NewCategoryRequest";
 import {CategoryResponse} from "./response/CategoryResponse";
+import {Category} from "../../../domain/Category";
 
 export interface CreateCategoryUseCase {
-    createCategory(request: NewCategoryRequest): Promise<CategoryResponse>
+    createCategory(category: Category): Promise<CategoryResponse>
 }

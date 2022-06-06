@@ -1,101 +1,118 @@
-import { CreateAccountPort } from "../../../application/ports/out/CreateAccountPort";
-import { AccountDAO } from "../../../application/ports/out/dao/AccountDAO";
-import { DeleteAccountPort } from "../../../application/ports/out/DeleteAccountPort";
-import { GetAccountPort } from "../../../application/ports/out/GetAccountPort";
-import { UpdateAccountPort } from "../../../application/ports/out/UpdateAccountPort";
-import { AccountModel } from "./models/AccountModel";
-import { FileModel } from "./models/FileModel";
+import {CreateAccountPort} from "../../../application/ports/out/CreateAccountPort";
+import {DeleteAccountPort} from "../../../application/ports/out/DeleteAccountPort";
+import {GetAccountPort} from "../../../application/ports/out/GetAccountPort";
+import {UpdateAccountPort} from "../../../application/ports/out/UpdateAccountPort";
+import {AccountModel} from "./models/AccountModel";
+import {FileModel} from "./models/FileModel";
+import {Account} from "../../../domain/Account";
 
 export class AccountPersistence implements CreateAccountPort, GetAccountPort, UpdateAccountPort, DeleteAccountPort {
 
-    private readonly accountModel: typeof AccountModel
-    private readonly fileModel: typeof FileModel
-
-    constructor(model: typeof AccountModel, fileModel: typeof FileModel) {
-        this.accountModel = model;
-        this.fileModel = fileModel;
+    constructor(
+        private readonly accountModel: typeof AccountModel,
+        private readonly fileModel: typeof FileModel
+    ) {
     }
 
-    async createAccount(accountArg: AccountDAO): Promise<AccountDAO> {
+    async createAccount(accountArg: Account): Promise<Account> {
 
         const account = new this.accountModel()
-        account.name = accountArg.name
-        account.family = accountArg.family
-        account.email = accountArg.email
-        account.password = accountArg.password
+        account.name = accountArg.name!
+        account.family = accountArg.family!
+        account.email = accountArg.email!
+        account.username = accountArg.username!
+        account.password = accountArg.password!
         account.role = accountArg.role
 
         const savedAccount = await account.save()
 
-        return new AccountDAO(savedAccount);
+        return savedAccount.toDomainModel();
     }
 
 
-    async getAccountById(id: string): Promise<AccountDAO | null> {
+    async getAccountById(id: string): Promise<Account | null> {
 
-        const account = await this.accountModel.findOne({ where: { id: id } })
+        const account = await this.accountModel.findOne({where: {id: id}})
 
-        if (account) return new AccountDAO(account);
+        if (account) return account.toDomainModel();
 
         return null;
     }
 
-    async getAccountByEmail(email: string): Promise<AccountDAO | null> {
+    async getAccountByEmail(email: string): Promise<Account | null> {
 
-        const account = await this.accountModel.findOne({ where: { email: email } })
+        const account = await this.accountModel.findOne({where: {email: email}})
 
-        if (account) return new AccountDAO(account);
-
-        return null;
-    }
-
-    async getAccountByUsername(username: string): Promise<AccountDAO | null> {
-
-        const account = await this.accountModel.findOne({ where: { username: username } })
-
-        if (account) return new AccountDAO(account);
+        if (account) return account.toDomainModel();
 
         return null;
     }
 
-    async getAccountByRole(role: string): Promise<AccountDAO[]> {
-        const accounts = await this.accountModel.find({ where: { role: role } })
-        return accounts.map(account => new AccountDAO(account));
+    async getAccountByUsername(username: string): Promise<Account | null> {
+
+        const account = await this.accountModel.findOne({where: {username: username}})
+
+        if (account) return account.toDomainModel();
+
+        return null;
     }
 
-    async getAccounts(offset: number, limit: number): Promise<AccountDAO[]>{
-        const accounts = await this.accountModel.find({ skip: offset, take: limit})
-        return accounts.map(account => new AccountDAO(account));
+    async getAccountByRole(role: string): Promise<Account[]> {
+        const accounts = await this.accountModel.find({where: {role: role}})
+        return accounts.map(account => account.toDomainModel());
     }
 
-    async updateAccount(account: AccountDAO): Promise<AccountDAO | null> {
+    async getAccounts(offset: number, limit: number): Promise<Account[]> {
+        const accounts = await this.accountModel.find({skip: offset, take: limit})
+        return accounts.map(account => account.toDomainModel());
+    }
 
-        const loadedAccount = await this.accountModel.findOne({ where: { username: account.username } })
+    async updateAccount(account: Account): Promise<Account> {
 
-        if (loadedAccount) {
-            loadedAccount.name = account.name
-            loadedAccount.family = account.family
-            loadedAccount.email = account.email
-            loadedAccount.username = account.username
-            loadedAccount.password = account.password
-            loadedAccount.about = account.about
-            loadedAccount.role = account.role
-            if (account.thumbnail && account.thumbnail.id) {
-                const file = await this.fileModel.findOne({ where: { id: account.thumbnail.id } })
-                loadedAccount.thumbnail = file!
-            }
+        const loadedAccount = await this.accountModel.findOne({where: {username: account.username}})
 
-            const updatedAccount = await this.accountModel.save(loadedAccount)
-
-            return new AccountDAO(updatedAccount)
+        loadedAccount!.name = account.name!
+        loadedAccount!.family = account.family!
+        loadedAccount!.email = account.email!
+        loadedAccount!.username = account.username!
+        if (account.password) loadedAccount!.password = account.password
+        if (account.about) loadedAccount!.about = account.about
+        loadedAccount!.role = account.role
+        if (account.thumbnail && account.thumbnail.id) {
+            const file = await this.fileModel.findOne({where: {id: account.thumbnail.id}})
+            loadedAccount!.thumbnail = file!
         }
 
-        return null;
+        const updatedAccount = await this.accountModel.save(loadedAccount!)
+
+        return updatedAccount.toDomainModel()
     }
 
-    async deleteAccount(accountId: string): Promise<boolean> {
 
-        const account = await this.accountModel.findOne({ where: { id: accountId } })
+    async deleteAccountById(accountId: string): Promise<boolean> {
+        const account = await this.accountModel.findOne({where: {id: accountId}})
+
+        if (account) {
+            await this.accountModel.remove(account)
+            return true;
+        }
+
+        return false;
+    }
+
+    async deleteAccountByEmail(email: string): Promise<boolean> {
+        const account = await this.accountModel.findOne({where: {email: email}})
+
+        if (account) {
+            await this.accountModel.remove(account)
+            return true;
+        }
+
+        return false;
+    }
+
+    async deleteAccountByUsername(username: string): Promise<boolean> {
+        const account = await this.accountModel.findOne({where: {username: username}})
 
         if (account) {
             await this.accountModel.remove(account)

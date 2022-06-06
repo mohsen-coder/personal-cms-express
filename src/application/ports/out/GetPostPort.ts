@@ -1,7 +1,9 @@
-import {PostDAO} from "./dao/PostDAO";
+import {Post} from "../../../domain/Post";
 
 export interface GetPostPort {
-    getPostById(postId: string): Promise<PostDAO | null>
+    getPostById(postId: string): Promise<Post | null>
 
-    getPosts(offset: number, limit: number): Promise<PostDAO[]>
+    getPostByTitle(postTitle: string): Promise<Post | null>
+
+    getPosts(offset: number, limit: number): Promise<Post[]>
 }

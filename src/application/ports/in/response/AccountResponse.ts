@@ -1,6 +1,7 @@
 import {ResponseBase} from "./ResponseBase";
+import {Account} from "../../../../domain/Account";
 
 export class AccountResponse extends ResponseBase {
-    account: object | null = null
-    accounts: object[] | null = null
+    account?: Account
+    accounts?: Account[]
 }

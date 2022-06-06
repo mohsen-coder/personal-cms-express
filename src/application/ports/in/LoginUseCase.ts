@@ -1,6 +1,5 @@
-import {LoginRequest} from "./request/LoginRequest";
-import {ResponseBase} from "./response/ResponseBase";
+import {LoginResponse} from "./response/LoginResponse";
 
 export interface LoginUseCase {
-    login(request: LoginRequest): Promise<ResponseBase>
+    login(request: {username: string, password: string}): Promise<LoginResponse>
 }

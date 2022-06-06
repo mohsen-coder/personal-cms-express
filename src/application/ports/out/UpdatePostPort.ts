@@ -1,5 +1,5 @@
-import { PostDAO } from "./dao/PostDAO";
+import {Post} from "../../../domain/Post";
 
 export interface UpdatePostPort {
-    updatePost(post: PostDAO): Promise<PostDAO | null>
+    updatePost(post: Post): Promise<Post>
 }

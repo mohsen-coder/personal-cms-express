@@ -1,32 +1,31 @@
 import {CreateFilePort} from "../../../application/ports/out/CreateFilePort";
 import {FileModel} from "./models/FileModel";
-import {FileDAO} from "../../../application/ports/out/dao/FileDAO";
 import {GetFilePort} from "../../../application/ports/out/GetFilePort";
 import {DeleteFilePort} from "../../../application/ports/out/DeleteFilePort";
+import {File} from "../../../domain/File";
 
 export class FilePersistence implements CreateFilePort, GetFilePort, DeleteFilePort {
 
-    private readonly fileModel: typeof FileModel
-
-    constructor(fileModel: typeof FileModel) {
-        this.fileModel = fileModel;
+    constructor(
+        private readonly fileModel: typeof FileModel
+    ) {
     }
 
-    async createFile(fileArg: FileDAO): Promise<FileDAO> {
+    async createFile(fileArg: File): Promise<File> {
         const file = new this.fileModel()
-        file.size = fileArg.size
-        file.title = fileArg.title
-        file.meme = fileArg.meme
-        file.fileType = fileArg.fileType
+        file.size = fileArg.size!
+        file.title = fileArg.title!
+        file.meme = fileArg.meme!
+        file.fileType = fileArg.fileType!
 
         const savedFile = await file.save()
 
-        return new FileDAO(savedFile)
+        return savedFile.toDomainModel()
     }
 
-    async getFileById(fileId: string): Promise<FileDAO | null> {
+    async getFileById(fileId: string): Promise<File | null> {
         const file = await this.fileModel.findOne({where: {id: fileId}})
-        return file ? new FileDAO(file) : null;
+        return file ? file.toDomainModel() : null;
     }
 
     async deleteFile(fileId: string): Promise<boolean> {

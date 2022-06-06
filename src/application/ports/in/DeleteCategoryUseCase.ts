@@ -1,6 +1,5 @@
-import {DeleteCategoryRequest} from "./request/DeleteCategoryRequest";
 import {ResponseBase} from "./response/ResponseBase";
 
 export interface DeleteCategoryUseCase {
-    deleteCategory(request: DeleteCategoryRequest): Promise<ResponseBase>
+    deleteCategory(categoryId: string): Promise<ResponseBase>
 }

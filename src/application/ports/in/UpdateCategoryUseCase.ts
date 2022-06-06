@@ -1,6 +1,6 @@
-import {EditCategoryRequest} from "./request/EditCategoryRequest";
 import {CategoryResponse} from "./response/CategoryResponse";
+import {Category} from "../../../domain/Category";
 
 export interface UpdateCategoryUseCase {
-    updateCategory(request: EditCategoryRequest): Promise<CategoryResponse>
+    updateCategory(category: Category): Promise<CategoryResponse>
 }

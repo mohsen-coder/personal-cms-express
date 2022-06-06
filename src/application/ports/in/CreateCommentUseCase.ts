@@ -1,6 +1,6 @@
-import {NewCommentRequest} from "./request/NewCommentRequest";
 import {CommentResponse} from "./response/CommentResponse";
+import {Comment} from "../../../domain/Comment";
 
 export interface CreateCommentUseCase {
-    createComment(request: NewCommentRequest): Promise<CommentResponse>
+    createComment(comment: Comment): Promise<CommentResponse>
 }

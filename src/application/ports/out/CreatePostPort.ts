@@ -1,5 +1,5 @@
-import {PostDAO} from "./dao/PostDAO";
+import {Post} from "../../../domain/Post";
 
 export interface CreatePostPort {
-    createPost(post: PostDAO): Promise<PostDAO>
+    createPost(post: Post): Promise<Post>
 }

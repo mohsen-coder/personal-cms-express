@@ -1,5 +1,5 @@
-import {FileDAO} from "./dao/FileDAO";
+import {File} from "../../../domain/File";
 
 export interface CreateFilePort {
-    createFile(file: FileDAO): Promise<FileDAO>
+    createFile(file: File): Promise<File>
 }

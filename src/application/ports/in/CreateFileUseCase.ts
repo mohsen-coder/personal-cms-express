@@ -1,6 +1,6 @@
-import {UploadFileRequest} from "./request/UploadFileRequest";
 import {FileResponse} from "./response/FileResponse";
+import {File} from "../../../domain/File";
 
 export interface CreateFileUseCase {
-    createFile(request: UploadFileRequest): Promise<FileResponse>
+    createFile(file: File): Promise<FileResponse>
 }

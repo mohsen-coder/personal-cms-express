@@ -1,6 +1,6 @@
-import {EditPostRequest} from "./request/EditPostRequest";
 import {PostResponse} from "./response/PostResponse";
+import {Post} from "../../../domain/Post";
 
 export interface UpdatePostUseCase {
-    updatePost(request: EditPostRequest): Promise<PostResponse>
+    updatePost(post: Post): Promise<PostResponse>
 }

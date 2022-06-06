@@ -1,5 +1,5 @@
-import { CategoryDAO } from "./dao/CategoryDAO";
+import {Category} from "../../../domain/Category";
 
 export interface UpdateCategoryPort {
-    updateCategory(category: CategoryDAO): Promise<CategoryDAO | null>
+    updateCategory(category: Category): Promise<Category>
 }

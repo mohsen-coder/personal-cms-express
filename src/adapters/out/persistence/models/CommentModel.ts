@@ -1,5 +1,15 @@
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne} from "typeorm";
-import { PostModel } from "./PostModel";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
+import {PostModel} from "./PostModel";
+import {Comment} from "../../../../domain/Comment";
+import {CommentStatus} from "../../../../domain/CommentStatus";
 
 @Entity()
 export class CommentModel extends BaseEntity {
@@ -12,4 +22,28 @@ export class CommentModel extends BaseEntity {
     @ManyToOne(() => PostModel, post => post.comments) post!: PostModel
     @CreateDateColumn() createAt!: Date
     @UpdateDateColumn() updateAt!: Date
+
+    toDomainModel(): Comment {
+        const comment = new Comment()
+        comment.id = this.id
+        comment.email = this.email
+        comment.name = this.name
+        comment.content = this.content
+        comment.parentId = this.parentId
+        comment.createAt = this.createAt
+        comment.updateAt = this.updateAt
+
+        switch (this.status) {
+            case "accept":
+                comment.status = CommentStatus.accept;
+                break;
+            case "reject":
+                comment.status = CommentStatus.reject;
+                break;
+            default:
+                comment.status = CommentStatus.none;
+        }
+
+        return comment;
+    }
 }

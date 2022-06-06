@@ -1,6 +1,7 @@
 import {ResponseBase} from "./ResponseBase";
+import {Category} from "../../../../domain/Category";
 
 export class CategoryResponse extends ResponseBase{
-    category: object | null = null
-    categories: object[] | null = null
+    category?: Category
+    categories?: Category[]
 }

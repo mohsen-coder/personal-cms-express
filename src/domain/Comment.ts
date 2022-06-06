@@ -1,11 +1,12 @@
-export class Comment {
-    id: string = ""
-    email: string = ""
-    name: string = ""
-    content: string = ""
-    createDate: number = 0
+import {CommentStatus} from "./CommentStatus";
 
-    constructor(init: object | null) {
-        init && Object.assign(this, init)
-    }
+export class Comment {
+    id?: string
+    parentId?: string
+    email?: string
+    name?: string
+    content?: string
+    status!: CommentStatus
+    createAt?: Date
+    updateAt?: Date
 }

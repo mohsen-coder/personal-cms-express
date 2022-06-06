@@ -1,6 +1,5 @@
-import {DeleteAccountRequest} from "./request/DeleteAccountRequest";
 import {ResponseBase} from "./response/ResponseBase";
 
 export interface DeleteAccountUseCase {
-    deleteAccount(request: DeleteAccountRequest): Promise<ResponseBase>
+    deleteAccount(request: { accountId?: string, username?: string, email?: string }): Promise<ResponseBase>
 }

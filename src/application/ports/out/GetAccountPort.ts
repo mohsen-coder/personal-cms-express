@@ -1,9 +1,13 @@
-import {AccountDAO} from "./dao/AccountDAO";
+import {Account} from "../../../domain/Account";
 
 export interface GetAccountPort {
-    getAccountById(id: string): Promise<AccountDAO | null>
-    getAccountByEmail(email: string): Promise<AccountDAO | null>
-    getAccountByUsername(username: string): Promise<AccountDAO | null>
-    getAccountByRole(role: string): Promise<AccountDAO[]>
-    getAccounts(offset: number, limit: number): Promise<AccountDAO[]>
+    getAccountById(id: string): Promise<Account | null>
+
+    getAccountByEmail(email: string): Promise<Account | null>
+
+    getAccountByUsername(username: string): Promise<Account | null>
+
+    getAccountByRole(role: string): Promise<Account[]>
+
+    getAccounts(offset: number, limit: number): Promise<Account[]>
 }

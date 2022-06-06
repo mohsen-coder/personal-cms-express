@@ -1,6 +1,6 @@
-import {NewPostRequest} from "./request/NewPostRequest";
 import {PostResponse} from "./response/PostResponse";
+import {Post} from "../../../domain/Post";
 
 export interface CreatePostUseCase {
-    createPost(request: NewPostRequest): Promise<PostResponse>
+    createPost(post: Post): Promise<PostResponse>
 }

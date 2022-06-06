@@ -1,114 +1,91 @@
-import { CreatePostPort } from "../../../application/ports/out/CreatePostPort";
-import { PostDAO } from "../../../application/ports/out/dao/PostDAO";
-import { DeletePostPort } from "../../../application/ports/out/DeletePostPort";
-import { GetPostPort } from "../../../application/ports/out/GetPostPort";
-import { UpdatePostPort } from "../../../application/ports/out/UpdatePostPort";
-import { AccountModel } from "./models/AccountModel";
-import { CategoryModel } from "./models/CategoryModel";
-import { FileModel } from "./models/FileModel";
-import { PostModel } from "./models/PostModel";
+import {CreatePostPort} from "../../../application/ports/out/CreatePostPort";
+import {DeletePostPort} from "../../../application/ports/out/DeletePostPort";
+import {GetPostPort} from "../../../application/ports/out/GetPostPort";
+import {UpdatePostPort} from "../../../application/ports/out/UpdatePostPort";
+import {AccountModel} from "./models/AccountModel";
+import {CategoryModel} from "./models/CategoryModel";
+import {FileModel} from "./models/FileModel";
+import {PostModel} from "./models/PostModel";
+import {Post} from "../../../domain/Post";
 
 export class PostPersistence implements CreatePostPort, GetPostPort, UpdatePostPort, DeletePostPort {
 
-    private readonly postModel: typeof PostModel
-    private readonly accountModel: typeof AccountModel
-    private readonly categoryModel: typeof CategoryModel
-    private readonly fileModel: typeof FileModel
-
-    constructor(postModel: typeof PostModel, accountModel: typeof AccountModel, categoryModel: typeof CategoryModel, fileModel: typeof FileModel) {
-        this.postModel = postModel
-        this.accountModel = accountModel
-        this.categoryModel = categoryModel
-        this.fileModel = fileModel
+    constructor(
+        private readonly postModel: typeof PostModel,
+        private readonly accountModel: typeof AccountModel,
+        private readonly categoryModel: typeof CategoryModel,
+        private readonly fileModel: typeof FileModel
+    ) {
     }
 
-
-    async createPost(postArg: PostDAO): Promise<PostDAO> {
-
-        const post = new this.postModel()
+    private async setPostModelPropsExceptAuthor(post: PostModel, postArg: Post): Promise<PostModel> {
         post.title = postArg.title
         post.content = postArg.content
         post.fullContent = postArg.fullContent
         post.tags = postArg.tags
-        post.publishDate = postArg.publishDate
+        if (postArg.publishDate) post.publishDate = postArg.publishDate
         post.status = postArg.status
 
         if (postArg.thumbnail && postArg.thumbnail.id) {
-            const thumbnail = await this.fileModel.findOne({ where: { id: postArg.thumbnail.id } })
+            const thumbnail = await this.fileModel.findOne({where: {id: postArg.thumbnail.id}})
             if (thumbnail) post.thumbnail = thumbnail;
         }
 
         if (postArg.categories && postArg.categories.length > 0) {
             post.categories = []
             for (let i = 0; i < postArg.categories.length; i++) {
-                const category = await this.categoryModel.findOne({ where: { id: postArg.categories[i].id } })
+                const category = await this.categoryModel.findOne({where: {id: postArg.categories[i].id}})
                 if (category) post.categories.push(category)
             }
         }
 
-        const author = await this.accountModel.findOne({ where: { id: postArg.author.id } })
+        return post;
+    }
+
+    async createPost(postArg: Post): Promise<Post> {
+        const postModel = new this.postModel()
+        const post = await this.setPostModelPropsExceptAuthor(postModel, postArg);
+
+        const author = await this.accountModel.findOne({where: {id: postArg.author.id}})
         post.author = author!
 
-
         const savedPost = await post.save()
-
-        return new PostDAO(savedPost)
+        return savedPost.toDomainModel()
     }
 
 
-    async getPostById(postId: string): Promise<PostDAO | null> {
-        const post = await this.postModel.findOne({ where: { id: postId } })
-        return post ? new PostDAO(post) : null;
+    async getPostById(postId: string): Promise<Post | null> {
+        const post = await this.postModel.findOne({where: {id: postId}})
+        return post ? post.toDomainModel() : null;
     }
 
-    async getPosts(offset: number, limit: number): Promise<PostDAO[]> {
-        const posts = await this.postModel.find({ skip: offset, take: limit })
-        return posts.map(post => new PostDAO(post))
+    async getPostByTitle(postTitle: string): Promise<Post | null> {
+        const post = await this.postModel.findOne({where: {title: postTitle}, relations: {author: true, categories: true}})
+        return post ? post.toDomainModel() : null;
+    }
+
+    async getPosts(offset: number, limit: number): Promise<Post[]> {
+        const posts = await this.postModel.find({skip: offset, take: limit, relations: {author: true, categories: true}})
+        return posts.map(post => post.toDomainModel())
     }
 
 
-    async updatePost(postArg: PostDAO): Promise<PostDAO | null> {
-
-        const post = await this.postModel.findOne({ where: { id: postArg.id! } })
-
-        if (post) {
-            post.title = postArg.title
-            post.content = postArg.content
-            post.fullContent = postArg.fullContent
-            post.tags = postArg.tags
-            post.publishDate = postArg.publishDate
-            post.status = postArg.status
-
-            if (postArg.thumbnail && postArg.thumbnail.id) {
-                const thumbnail = await this.fileModel.findOne({ where: { id: postArg.thumbnail.id } })
-                if (thumbnail) post.thumbnail = thumbnail;
-            }
-
-            if (postArg.categories && postArg.categories.length > 0) {
-                post.categories = []
-                for (let i = 0; i < postArg.categories.length; i++) {
-                    const category = await this.categoryModel.findOne({ where: { id: postArg.categories[i].id } })
-                    if (category) post.categories.push(category)
-                }
-            }
-
-            const updatedPost = await this.postModel.save(post)
-
-            return new PostDAO(updatedPost)
-        }
-
-        return null;
+    async updatePost(postArg: Post): Promise<Post> {
+        const postModel = await this.postModel.findOne({where: {id: postArg.id!}, relations: {author: true, categories: true}})
+        const post = await this.setPostModelPropsExceptAuthor(postModel!, postArg)
+        const updatedPost = await this.postModel.save(post)
+        return updatedPost.toDomainModel()
     }
 
     async deletePost(postId: string): Promise<boolean> {
 
         const post = await this.postModel.findOne({where: {id: postId}})
-        
-        if(post) {
+
+        if (post) {
             await this.postModel.remove(post)
             return true;
         }
-        
+
         return false;
     }
 }

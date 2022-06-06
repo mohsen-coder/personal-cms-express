@@ -1,3 +1,7 @@
 export interface DeleteAccountPort {
-    deleteAccount(accountId: string): Promise<boolean>
+    deleteAccountById(accountId: string): Promise<boolean>
+
+    deleteAccountByEmail(email: string): Promise<boolean>
+
+    deleteAccountByUsername(username: string): Promise<boolean>
 }

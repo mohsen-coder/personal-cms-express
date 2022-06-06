@@ -1,6 +1,6 @@
-import {RegisterRequest} from "./request/RegisterRequest";
 import {ResponseBase} from "./response/ResponseBase";
+import {Account} from "../../../domain/Account";
 
 export interface RegisterUseCase {
-    register(request: RegisterRequest): Promise<ResponseBase>
+    register(request: Account): Promise<ResponseBase>
 }

@@ -1,6 +1,6 @@
-import {EditAccountRequest} from "./request/EditAccountRequest";
 import {AccountResponse} from "./response/AccountResponse";
+import {Account} from "../../../domain/Account";
 
 export interface UpdateAccountUseCase {
-    updateAccount(request: EditAccountRequest): Promise<AccountResponse>
+    updateAccount(account: Account): Promise<AccountResponse>
 }
