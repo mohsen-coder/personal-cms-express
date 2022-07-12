@@ -3,35 +3,45 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    ManyToOne,
+    ManyToOne, OneToMany, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {PostModel} from "./PostModel";
 import {Comment} from "../../../../domain/Comment";
 import {CommentStatus} from "../../../../domain/CommentStatus";
+import log from "../../../../utils/logger";
 
 @Entity()
 export class CommentModel extends BaseEntity {
-    @PrimaryGeneratedColumn("uuid") id!: string
-    @Column() email!: string
-    @Column() name!: string
-    @Column() content!: string
-    @Column() status!: string
-    @Column({nullable: true}) parentId?: string
-    @ManyToOne(() => PostModel, post => post.comments) post!: PostModel
-    @CreateDateColumn() createAt!: Date
-    @UpdateDateColumn() updateAt!: Date
+    @PrimaryGeneratedColumn("uuid") id: string;
+    @Column() email: string;
+    @Column() name: string;
+    @Column({type: "text"}) content: string;
+    @Column() status: string;
+    @OneToMany(() => CommentModel, comment => comment.parent, {
+        nullable: true,
+        onDelete: "CASCADE"
+    }) children: CommentModel[] | null;
+    @ManyToOne(() => CommentModel, comment => comment.children, {
+        nullable: true,
+        onDelete: "CASCADE"
+    }) parent: CommentModel | null;
+    @ManyToOne(() => PostModel, post => post.comments, {onDelete: "NO ACTION"}) post: PostModel;
+    @CreateDateColumn() createAt: Date;
+    @UpdateDateColumn() updateAt: Date;
 
     toDomainModel(): Comment {
         const comment = new Comment()
-        comment.id = this.id
-        comment.email = this.email
-        comment.name = this.name
-        comment.content = this.content
-        comment.parentId = this.parentId
-        comment.createAt = this.createAt
-        comment.updateAt = this.updateAt
+
+        if (this.id) comment.id = this.id;
+        if (this.email) comment.email = this.email;
+        if (this.name) comment.name = this.name;
+        if (this.content) comment.content = this.content;
+        if (this.createAt) comment.createAt = this.createAt;
+        if (this.updateAt) comment.updateAt = this.updateAt;
+        if (this.post) comment.post = this.post.toDomainModel();
+        if (this.children) comment.children = this.children.map(commentArg => commentArg.toDomainModel());
 
         switch (this.status) {
             case "accept":

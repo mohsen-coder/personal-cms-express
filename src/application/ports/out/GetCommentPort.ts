@@ -1,9 +1,10 @@
 import {Comment} from "../../../domain/Comment";
+import {CommentDAO} from "./dao/CommentDAO";
 
 export interface GetCommentPort {
-    getCommentById(commentId: string): Promise<Comment | null>
+    getCommentById(commentId: string): Promise<CommentDAO>
 
-    getCommentsByPostId(postId: string): Promise<Comment[]>
+    getCommentsByStatusAndPostId(postId: string, status: string, offset: number, limit: number): Promise<CommentDAO>
 
-    getCommentsByStatus(commentStatus: string): Promise<Comment[]>
+    getCommentsByStatus(commentStatus: string, offset: number, limit: number): Promise<CommentDAO>
 }
