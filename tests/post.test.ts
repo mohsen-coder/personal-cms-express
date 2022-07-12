@@ -1,242 +1,322 @@
 import {db} from "../config/Database";
-import {Post} from "../src/domain/Post";
-import {Account} from "../src/domain/Account";
-import {AccountRole} from "../src/domain/AccountRole";
-import {AccountPersistence} from "../src/adapters/out/persistence/AccountPersistence";
-import {AccountModel} from "../src/adapters/out/persistence/models/AccountModel";
-import {FileModel} from "../src/adapters/out/persistence/models/FileModel";
-import {CreateAccountService} from "../src/application/services/CreateAccountService";
-import {CreateAccountPort} from "../src/application/ports/out/CreateAccountPort";
-import {GetAccountPort} from "../src/application/ports/out/GetAccountPort";
-import {DeleteAccountService} from "../src/application/services/DeleteAccountService";
-import {DeleteAccountPort} from "../src/application/ports/out/DeleteAccountPort";
-import {GetAccountService} from "../src/application/services/GetAccountService";
-import {PostStatus} from "../src/domain/PostStatus";
-import {Category} from "../src/domain/Category";
-import {CategoryPersistence} from "../src/adapters/out/persistence/CategoryPersistence";
-import {CategoryModel} from "../src/adapters/out/persistence/models/CategoryModel";
-import {CreateCategoryService} from "../src/application/services/CreateCategoryService";
-import {CreateCategoryPort} from "../src/application/ports/out/CreateCategoryPort";
-import {GetCategoryPort} from "../src/application/ports/out/GetCategoryPort";
-import {GetCategoryService} from "../src/application/services/GetCategoryService";
-import {DeleteCategoryService} from "../src/application/services/DeleteCategoryService";
-import {DeleteCategoryPort} from "../src/application/ports/out/DeleteCategoryPort";
-import {PostPersistence} from "../src/adapters/out/persistence/PostPersistence";
-import {PostModel} from "../src/adapters/out/persistence/models/PostModel";
-import {CreatePostService} from "../src/application/services/CreatePostService";
-import {CreatePostPort} from "../src/application/ports/out/CreatePostPort";
-import {Messages} from "../values/Messages";
-import {GetPostService} from "../src/application/services/GetPostService";
-import {GetPostPort} from "../src/application/ports/out/GetPostPort";
-import {UpdatePostService} from "../src/application/services/UpdatePostService";
-import {UpdatePostPort} from "../src/application/ports/out/UpdatePostPort";
-import {DeletePostService} from "../src/application/services/DeletePostService";
-import {DeletePostPort} from "../src/application/ports/out/DeletePostPort";
+import {AccountModel} from "../src/adapters/in/express/model/AccountModel";
+import {
+    createAccountService,
+    createCategoryService,
+    createFileService, createPostService,
+    deleteAccountService,
+    deleteCategoryService, deleteFileService, deletePostService, getAccountService, getPostService, updatePostService
+} from "../src/Config";
+import {CategoryModel} from "../src/adapters/in/express/model/CategoryModel";
+import {FileModel} from "../src/adapters/in/express/model/FileModel";
+import {v4 as UUIdV4} from "uuid";
+import {PostModel} from "../src/adapters/in/express/model/PostModel";
 
-async function createAuthor() {
-    const account = new Account()
-    account.name = "mohsen"
-    account.family = "coder"
-    account.email = "test@gmail.com"
-    account.username = "mohsen.coder"
-    account.password = "123456789"
-    account.role = AccountRole.user
 
-    const accountPersistence = new AccountPersistence(AccountModel, FileModel);
-    const createAccountService = new CreateAccountService(accountPersistence as CreateAccountPort, accountPersistence as GetAccountPort);
-    await createAccountService.register(account)
+let accountId: string;
+let categoryId: string;
+let fileId: string = UUIdV4();
+
+type PostType = {
+    id: string,
+    thumbnail?: { id: string },
+    title: string,
+    content: string,
+    fullContent?: string,
+    categories?: { id: string, title: string }[],
+    tags?: string[],
+    author: {
+        id: string
+    },
+    view: number,
+    like: number,
+    publishDate?: number,
+    status: string,
+    createAt?: number,
+    updateAt?: number
 }
 
-async function getAccount(): Promise<Account> {
-    const accountPersistence = new AccountPersistence(AccountModel, FileModel);
-    const getAccountService = new GetAccountService(accountPersistence);
-    const accountResponse = await getAccountService.getAccount({username: "mohsen.coder"});
-    return accountResponse.account!
+type ExpectType = {
+    post?: PostType,
+    posts?: PostType[],
+    status: string,
+    messages: string[]
 }
 
-async function deleteAuthor() {
-    const username = "mohsen.coder"
-    const accountPersistence = new AccountPersistence(AccountModel, FileModel);
-    const deleteAccountService = new DeleteAccountService(accountPersistence as DeleteAccountPort, accountPersistence as GetAccountPort);
-    await deleteAccountService.deleteAccount({username});
+async function createAccount() {
+    const accountData = {
+        name: "Mohsen",
+        family: "Coder",
+        email: "mohsen@gmail.com",
+        username: "mohsen.coder",
+        password: "76mnoZxA",
+        confirmPassword: "76mnoZxA"
+    };
+
+    const accountModel = new AccountModel(accountData);
+    await createAccountService.register(accountModel.toDomainModel());
+}
+
+async function getAccount() {
+    const response = await getAccountService.getAccount({username: "mohsen.coder"});
+    accountId = response.account.id;
+}
+
+async function deleteAccount() {
+    const request = {
+        id: accountId
+    };
+    await deleteAccountService.deleteAccount(request);
 }
 
 async function createCategory() {
-    const category = new Category()
-    category.title = "test one"
-
-    const categoryPersistence = new CategoryPersistence(CategoryModel);
-    const createCategoryService = new CreateCategoryService(categoryPersistence as CreateCategoryPort, categoryPersistence as GetCategoryPort);
-    await createCategoryService.createCategory(category);
-}
-
-async function getCategory(): Promise<Category> {
-    const categoryPersistence = new CategoryPersistence(CategoryModel);
-    const getCategoryService = new GetCategoryService(categoryPersistence as GetCategoryPort);
-    const categoryResponse = await getCategoryService.getCategory({title: "test one"});
-    return categoryResponse.category!
+    const categoryModel = new CategoryModel({
+        title: 'hello world',
+    })
+    const response = await createCategoryService.createCategory(categoryModel.toDomainModel());
+    categoryId = response.category.id;
 }
 
 async function deleteCategory() {
-    const categoryPersistence = new CategoryPersistence(CategoryModel);
+    await deleteCategoryService.deleteCategory(categoryId);
+}
 
-    const getCategoryService = new GetCategoryService(categoryPersistence as GetCategoryPort);
-    const categoryResponse = await getCategoryService.getCategory({title: "test one"});
+async function uploadFile() {
+    const fileModel = new FileModel({
+        id: fileId,
+        name: 'thumbnail',
+        size: '100kb',
+        mimeType: 'image/jpeg'
+    });
+    await createFileService.createFile(fileModel.toDomainModel());
+}
 
-    const deleteCategoryService = new DeleteCategoryService(categoryPersistence as DeleteCategoryPort);
-    await deleteCategoryService.deleteCategory(categoryResponse.category!.id!);
+async function deleteFile() {
+    await deleteFileService.deleteFile(fileId);
 }
 
 beforeAll(async () => {
-    await db.initialize()
-    await createAuthor()
-    await createCategory()
-})
+    await db.initialize();
+    await createAccount();
+    await getAccount();
+    await createCategory();
+    await uploadFile();
+});
 
 afterAll(async () => {
-    await db.destroy()
-    await deleteAuthor()
-    await deleteCategory()
-})
+    await deleteFile();
+    await deleteCategory();
+    await deleteAccount();
+    await db.destroy();
+});
+
 
 describe('post tests', () => {
 
+    let postId: string;
+
     test('create', async () => {
-        const category = await getCategory()
-        const post = new Post();
-        post.title = "hello"
-        post.content = "world"
-        post.fullContent = "hello world"
-        post.categories = [category]
-        post.author = await getAccount()
-        post.tags = ['hello', 'world']
-        post.status = PostStatus.publish
+        const postModel = new PostModel({
+            thumbnail: {
+                id: fileId
+            },
+            title: 'test post title',
+            content: '<h1>test post content</h1>',
+            fullContent: '<h2>test post full content</h2>',
+            categories: [{id: categoryId}],
+            tags: ['tag one', 'tag two'],
+            author: {
+                id: accountId
+            },
+            publishDate: new Date().getTime(),
+            status: "publish"
+        });
 
-        const postPersistence = new PostPersistence(PostModel, AccountModel, CategoryModel, FileModel);
-        const createPostService = new CreatePostService(postPersistence as CreatePostPort);
-        const postResponse = await createPostService.createPost(post);
-
-        post.id = postResponse.post?.id
-        post.thumbnail = postResponse.post?.thumbnail
-        post.comments = postResponse.post?.comments
-        post.publishDate = postResponse.post?.publishDate
-        post.like = postResponse.post?.like
-        post.view = postResponse.post?.view
-        post.createAt = postResponse.post?.createAt
-        post.updateAt = postResponse.post?.updateAt
-
-        const expectedResponse = {
-            post: post,
-            status: 'success',
-            messages: [Messages.post.create.Success.fa]
-        }
-
-        expect(postResponse).toEqual(expectedResponse)
-
-    })
-
-    test('get single', async () => {
-        const category = await getCategory()
-
-        const postPersistence = new PostPersistence(PostModel, AccountModel, CategoryModel, FileModel);
-        const getPostService = new GetPostService(postPersistence as GetPostPort);
-        const postResponse = await getPostService.getPost({postTitle: "hello"});
-
-        const expectedResponse = {
+        const response = await createPostService.createPost(postModel.toDomainModel());
+        postId = response.post.id;
+        const expected: ExpectType = {
             post: {
-                id: postResponse.post!.id,
-                title: "hello",
-                thumbnail: null,
-                content: "world",
-                fullContent: "hello world",
-                categories: [category],
-                author: await getAccount(),
-                tags: ['hello', 'world'],
-                status: PostStatus.publish,
+                id: response.post.id,
+                thumbnail: {
+                    id: fileId
+                },
+                title: 'test post title',
+                content: '<h1>test post content</h1>',
+                fullContent: '<h2>test post full content</h2>',
+                categories: [{id: categoryId, title: 'hello world'}],
+                tags: ['tag one', 'tag two'],
+                author: {
+                    id: accountId
+                },
+                publishDate: response.post.publishDate,
+                createAt: response.post.createAt,
+                updateAt: response.post.updateAt,
+                status: "publish",
                 like: 0,
-                view: 0,
-                publishDate: null,
-                createAt: postResponse.post!.createAt,
-                updateAt: postResponse.post!.updateAt,
+                view: 0
             },
             status: 'success',
-            messages: [Messages.post.get.Success.fa]
+            messages: ['مطلب با موفقیت ثبت شد!']
         }
+        expect(response).toEqual(expected);
 
-        expect(postResponse).toEqual(expectedResponse)
-    })
+    });
 
-    test('get by pagination', async () => {
-        const category = await getCategory()
+    test('get by title', async () => {
+        const request = {
+            postTitle: 'test post title'
+        };
 
-        const postPersistence = new PostPersistence(PostModel, AccountModel, CategoryModel, FileModel);
-        const getPostService = new GetPostService(postPersistence as GetPostPort);
-        const postResponse = await getPostService.getPost({pagination: {offset: 0, limit: 10}});
+        const response = await getPostService.getPost(request)
 
-        const expectedResponse = {
-            posts: [{
-                id: postResponse.posts![0].id,
-                title: "hello",
-                thumbnail: null,
-                content: "world",
-                fullContent: "hello world",
-                categories: [category],
-                author: await getAccount(),
-                tags: ['hello', 'world'],
-                status: PostStatus.publish,
+        const expected: ExpectType = {
+            post: {
+                id: response.post.id,
+                thumbnail: {
+                    id: fileId
+                },
+                title: 'test post title',
+                content: '<h1>test post content</h1>',
+                fullContent: '<h2>test post full content</h2>',
+                categories: [{id: categoryId, title: 'hello world'}],
+                tags: ['tag one', 'tag two'],
+                author: {
+                    id: accountId
+                },
+                publishDate: response.post.publishDate,
+                createAt: response.post.createAt,
+                updateAt: response.post.updateAt,
+                status: "publish",
                 like: 0,
-                view: 0,
-                publishDate: null,
-                createAt: postResponse.posts![0].createAt,
-                updateAt: postResponse.posts![0].updateAt,
+                view: 0
+            },
+            status: 'success',
+            messages: ['مطلب با موفقیت دریافت شد!']
+        }
+        expect(response).toEqual(expected);
+    });
+
+    test('get by id', async () => {
+        const request = {
+            id: postId
+        };
+
+        const response = await getPostService.getPost(request)
+
+        const expected: ExpectType = {
+            post: {
+                id: response.post.id,
+                thumbnail: {
+                    id: fileId
+                },
+                title: 'test post title',
+                content: '<h1>test post content</h1>',
+                fullContent: '<h2>test post full content</h2>',
+                categories: [{id: categoryId, title: 'hello world'}],
+                tags: ['tag one', 'tag two'],
+                author: {
+                    id: accountId
+                },
+                publishDate: response.post.publishDate,
+                createAt: response.post.createAt,
+                updateAt: response.post.updateAt,
+                status: "publish",
+                like: 0,
+                view: 0
+            },
+            status: 'success',
+            messages: ['مطلب با موفقیت دریافت شد!']
+        }
+        expect(response).toEqual(expected);
+    });
+
+    test('get by status', async () => {
+        const request = {
+            status: 'publish',
+            pagination: {
+                offset: 0,
+                limit: 10
+            }
+        };
+
+        const response = await getPostService.getPost(request)
+
+        const expected: ExpectType = {
+            posts: [{
+                id: response.posts[0].id,
+                thumbnail: {
+                    id: fileId
+                },
+                title: 'test post title',
+                content: '<h1>test post content</h1>',
+                categories: [{id: categoryId, title: 'hello world'}],
+                tags: ['tag one', 'tag two'],
+                author: {
+                    id: accountId
+                },
+                createAt: response.posts[0].createAt,
+                publishDate: response.posts[0].publishDate,
+                status: "publish",
+                like: 0,
+                view: 0
             }],
             status: 'success',
-            messages: [Messages.post.get.Success.fa]
+            messages: ['مطلب با موفقیت دریافت شد!']
         }
-
-        expect(postResponse).toEqual(expectedResponse)
-    })
+        expect(response).toEqual(expected);
+    });
 
     test('update', async () => {
-        const postPersistence = new PostPersistence(PostModel, AccountModel, CategoryModel, FileModel);
-
-        const getPostService = new GetPostService(postPersistence as GetPostPort);
-        const getPostResponse = await getPostService.getPost({postTitle: "hello"});
-
-        const post = getPostResponse.post!
-        post.title = "hi babe"
-
-        const updatePostService = new UpdatePostService(postPersistence as UpdatePostPort);
-        const postResponse = await updatePostService.updatePost(post);
-
-        post.updateAt = postResponse.post!.updateAt;
-
-        const expectedResponse = {
-            post: post,
+        const postModel = new PostModel({
+            id: postId,
+            thumbnail: {
+                id: fileId
+            },
+            title: 'updated post title',
+            content: '<h1>test post content updated</h1>',
+            fullContent: '<h2>test post full content updated</h2>',
+            categories: [{id: categoryId}],
+            tags: ['tag one', 'tag two', 'tag three'],
+            author: {
+                id: accountId
+            },
+            status: "publish"
+        });
+        const response = await updatePostService.updatePost(postModel.toDomainModel());
+        const expected: ExpectType = {
+            post: {
+                id: response.post.id,
+                thumbnail: {
+                    id: fileId
+                },
+                title: 'updated post title',
+                content: '<h1>test post content updated</h1>',
+                fullContent: '<h2>test post full content updated</h2>',
+                categories: [{id: categoryId, title: 'hello world'}],
+                tags: ['tag one', 'tag two', 'tag three'],
+                author: {
+                    id: accountId
+                },
+                publishDate: response.post.publishDate,
+                createAt: response.post.createAt,
+                updateAt: response.post.updateAt,
+                status: "publish",
+                like: 0,
+                view: 0
+            },
             status: 'success',
-            messages: [Messages.post.update.Success.fa]
+            messages: ['مطلب با موفقیت ویرایش شد!']
         }
-
-        expect(postResponse).toEqual(expectedResponse)
-    })
+        expect(response).toEqual(expected);
+    });
 
     test('delete', async () => {
-        const postPersistence = new PostPersistence(PostModel, AccountModel, CategoryModel, FileModel);
-
-        const getPostService = new GetPostService(postPersistence as GetPostPort);
-        const getPostResponse = await getPostService.getPost({postTitle: "hi babe"});
-
-        const post = getPostResponse.post!
-
-        const deletePostService = new DeletePostService(postPersistence as DeletePostPort);
-        const responseBase = await deletePostService.deletePost(post.id!);
-
-        const expectedResponse = {
+        const response = await deletePostService.deletePost(postId);
+        const expected: ExpectType = {
             status: 'success',
-            messages: [Messages.post.delete.Success.fa]
+            messages: ['مطلب با موفقیت حذف شد!']
         }
+        expect(response).toEqual(expected);
+    });
 
-        expect(responseBase).toEqual(expectedResponse)
-    })
-
-})
+});

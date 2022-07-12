@@ -1,112 +1,277 @@
-import {db} from "../config/Database"
-import {Messages} from "../values/Messages";
-import {Category} from "../src/domain/Category";
-import {CreateCategoryService} from "../src/application/services/CreateCategoryService";
-import {CategoryPersistence} from "../src/adapters/out/persistence/CategoryPersistence";
-import {CategoryModel} from "../src/adapters/out/persistence/models/CategoryModel";
-import {CreateCategoryPort} from "../src/application/ports/out/CreateCategoryPort";
-import {GetCategoryPort} from "../src/application/ports/out/GetCategoryPort";
-import {GetCategoryService} from "../src/application/services/GetCategoryService";
-import {UpdateCategoryService} from "../src/application/services/UpdateCategoryService";
-import {UpdateCategoryPort} from "../src/application/ports/out/UpdateCategoryPort";
-import {DeleteCategoryService} from "../src/application/services/DeleteCategoryService";
-import {DeleteCategoryPort} from "../src/application/ports/out/DeleteCategoryPort";
+import {db} from "../config/Database";
+import {CategoryModel} from "../src/adapters/in/express/model/CategoryModel";
+import {createCategoryService, deleteCategoryService, getCategoryService, updateCategoryService} from "../src/Config";
+
+
+type CategoryType = {
+    id: string,
+    parent?: {
+        id?: string,
+        title: string
+    },
+    title: string
+}
+
+type ExpectType = {
+    category?: CategoryType,
+    categories?: CategoryType[],
+    status: string,
+    messages: string[]
+}
 
 beforeAll(async () => {
-    await db.initialize()
-})
+    await db.initialize();
+});
 
 afterAll(async () => {
-    await db.destroy()
-})
+    await db.destroy();
+});
 
-describe('account tests', () => {
+
+describe("category test", () => {
+
+    let parentCategoryId: string;
+    let childCategoryId: string;
 
     test('create', async () => {
-        const category = new Category()
-        category.title = "test one"
-
-        const categoryPersistence = new CategoryPersistence(CategoryModel);
-        const createCategoryService = new CreateCategoryService(categoryPersistence as CreateCategoryPort, categoryPersistence as GetCategoryPort);
-        const categoryResponse = await createCategoryService.createCategory(category);
-
-        category.id = categoryResponse.category!.id
-        category.parentId = categoryResponse.category!.parentId
-        category.createAt = categoryResponse.category!.createAt
-        category.updateAt = categoryResponse.category!.updateAt
-
-        const expectedResponse = {
-            category: category,
-            status: 'success',
-            messages: [Messages.category.create.Success.fa]
-        }
-
-        expect(categoryResponse).toEqual(expectedResponse)
-        // expect(true).toBe(true)
-    })
-
-    test('get', async () => {
-        const categoryPersistence = new CategoryPersistence(CategoryModel);
-        const getCategoryService = new GetCategoryService(categoryPersistence as GetCategoryPort);
-        const categoryResponse = await getCategoryService.getCategory({title: "test one"});
-
-        const expectedResponse = {
+        const categoryModel = new CategoryModel({
+            title: 'hello world',
+        })
+        const response = await createCategoryService.createCategory(categoryModel.toDomainModel());
+        const expected: ExpectType = {
             category: {
-                parentId: categoryResponse.category?.parentId,
-                id: categoryResponse.category?.id,
-                title: 'test one',
-                createAt: categoryResponse.category?.createAt,
-                updateAt: categoryResponse.category?.updateAt
+                id: response.category!.id!,
+                title: 'hello world'
             },
             status: 'success',
-            messages: [Messages.category.get.Success.fa]
-        }
-        expect(categoryResponse).toEqual(expectedResponse)
+            messages: ['دسته بندی با موفقیت ایجاد شد!']
+        };
+        parentCategoryId = response.category!.id!;
+        expect(response).toEqual(expected);
+    });
+
+    test('create children category', async () => {
+        const categoryModel = new CategoryModel({
+            title: 'child category',
+            parent: {
+                id: parentCategoryId
+            }
+        });
+        const response = await createCategoryService.createCategory(categoryModel.toDomainModel());
+        childCategoryId = response.category!.id!;
+        const expected: ExpectType = {
+            category: {
+                id: response.category!.id!,
+                title: 'child category',
+                parent: {
+                    id: parentCategoryId,
+                    title: 'hello world'
+                }
+            },
+            status: 'success',
+            messages: ['دسته بندی با موفقیت ایجاد شد!']
+        };
+        expect(response).toEqual(expected);
     })
+
+    test('get by title', async () => {
+        const request = {
+            title: 'hello world'
+        }
+        const response = await getCategoryService.getCategory(request);
+        const expected: ExpectType = {
+            category: {
+                id: parentCategoryId,
+                title: 'hello world'
+            },
+            status: 'success',
+            messages: ['دسته بندی با موفقیت دریافت شد!']
+        };
+        expect(response).toEqual(expected);
+    });
+
+    test('get child by title', async () => {
+        const request = {
+            title: 'child category'
+        }
+        const response = await getCategoryService.getCategory(request);
+        const expected: ExpectType = {
+            category: {
+                id: childCategoryId,
+                title: 'child category',
+                parent: {
+                    id: parentCategoryId,
+                    title: 'hello world'
+                }
+            },
+            status: 'success',
+            messages: ['دسته بندی با موفقیت دریافت شد!']
+        };
+        expect(response).toEqual(expected);
+    })
+
+    test('get by id', async () => {
+        const request = {
+            id: parentCategoryId
+        }
+        const response = await getCategoryService.getCategory(request);
+        const expected: ExpectType = {
+            category: {
+                id: parentCategoryId,
+                title: 'hello world'
+            },
+            status: 'success',
+            messages: ['دسته بندی با موفقیت دریافت شد!']
+        };
+        expect(response).toEqual(expected);
+    });
+
+    test('get child by id', async () => {
+        const request = {
+            id: childCategoryId
+        };
+        const response = await getCategoryService.getCategory(request);
+        const expected: ExpectType = {
+            category: {
+                id: childCategoryId,
+                title: 'child category',
+                parent: {
+                    id: parentCategoryId,
+                    title: 'hello world'
+                }
+            },
+            status: 'success',
+            messages: ['دسته بندی با موفقیت دریافت شد!']
+        };
+        expect(response).toEqual(expected);
+    })
+
+
+    test('get by pagination', async () => {
+        const request = {
+            pagination: {
+                offset: 0,
+                limit: 10
+            }
+        }
+        const response = await getCategoryService.getCategory(request);
+        const expected: ExpectType = {
+            categories: [
+                {
+                    id: parentCategoryId,
+                    title: 'hello world'
+                },
+                {
+                    id: childCategoryId,
+                    title: 'child category',
+                    parent: {
+                        title: 'hello world'
+                    }
+                }
+            ],
+            status: 'success',
+            messages: ['دسته بندی با موفقیت دریافت شد!']
+        }
+    });
 
     test('update', async () => {
-        const categoryPersistence = new CategoryPersistence(CategoryModel);
-
-        const getCategoryService = new GetCategoryService(categoryPersistence as GetCategoryPort);
-        const getCategoryResponse = await getCategoryService.getCategory({title: "test one"});
-
-        const category = getCategoryResponse.category;
-
-        category!.title = "test two"
-
-        const updateCategoryService = new UpdateCategoryService(categoryPersistence as UpdateCategoryPort, categoryPersistence as GetCategoryPort);
-        const categoryResponse = await updateCategoryService.updateCategory(category!);
-
-        const expectedResponse = {
+        const categoryModel = new CategoryModel({
+            id: parentCategoryId,
+            title: 'hey parent'
+        });
+        const response = await updateCategoryService.updateCategory(categoryModel.toDomainModel());
+        const expected: ExpectType = {
             category: {
-                id: category?.id,
-                parentId: category?.parentId,
-                title: "test two",
-                createAt: category?.createAt,
-                updateAt: categoryResponse.category?.updateAt
+                id: parentCategoryId,
+                title: 'hey parent'
             },
             status: 'success',
-            messages: [Messages.category.update.Success.fa]
+            messages: ['دسته بندی با موفقیت ویرایش شد!']
         }
+        expect(response).toEqual(expected);
+    });
 
-        expect(categoryResponse).toEqual(expectedResponse)
+    test('update child category', async () => {
+        const categoryModel = new CategoryModel({
+            id: childCategoryId,
+            title: 'hey child',
+            parent: {
+                id: parentCategoryId
+            }
+        });
+        const response = await updateCategoryService.updateCategory(categoryModel.toDomainModel());
+        const expected: ExpectType = {
+            category: {
+                id: childCategoryId,
+                title: 'hey child',
+                parent: {
+                    id: parentCategoryId,
+                    title: 'hey parent'
+                }
+            },
+            status: 'success',
+            messages: ['دسته بندی با موفقیت ویرایش شد!']
+        }
+        expect(response).toEqual(expected);
+    });
+
+    test('set child category as a root category', async () => {
+        const categoryModel = new CategoryModel({
+            id: childCategoryId,
+            title: 'hey child'
+        });
+        const response = await updateCategoryService.updateCategory(categoryModel.toDomainModel());
+        const expected: ExpectType = {
+            category: {
+                id: childCategoryId,
+                title: 'hey child'
+            },
+            status: 'success',
+            messages: ['دسته بندی با موفقیت ویرایش شد!']
+        };
+        expect(response).toEqual(expected);
     })
 
-    test('delete', async () => {
-        const categoryPersistence = new CategoryPersistence(CategoryModel);
-
-        const getCategoryService = new GetCategoryService(categoryPersistence as GetCategoryPort);
-        const categoryResponse = await getCategoryService.getCategory({title: "test two"});
-
-        const deleteCategoryService = new DeleteCategoryService(categoryPersistence as DeleteCategoryPort);
-        const responseBase = await deleteCategoryService.deleteCategory(categoryResponse.category!.id!);
-
-        const expectedResponse = {
+    test('set child category under parent category', async () => {
+        const categoryModel = new CategoryModel({
+            id: childCategoryId,
+            title: 'hey child',
+            parent: {
+                id: parentCategoryId
+            }
+        });
+        const response = await updateCategoryService.updateCategory(categoryModel.toDomainModel());
+        const expected: ExpectType = {
+            category: {
+                id: childCategoryId,
+                title: 'hey child',
+                parent: {
+                    id: parentCategoryId,
+                    title: 'hey parent'
+                }
+            },
             status: 'success',
-            messages: [Messages.category.delete.Success.fa]
-        }
+            messages: ['دسته بندی با موفقیت ویرایش شد!']
+        };
+        expect(response).toEqual(expected);
+    });
 
-        expect(responseBase).toEqual(expectedResponse)
+    test('delete by id', async () => {
+        const response = await deleteCategoryService.deleteCategory(parentCategoryId);
+        const expected: ExpectType = {
+            status: 'success',
+            messages: ['دسته بندی با موفقیت حذف شد!']
+        };
+        expect(response).toEqual(expected);
+    });
+
+    test('delete child by id', async () => {
+        const response = await deleteCategoryService.deleteCategory(childCategoryId);
+        const expected: ExpectType = {
+            status: 'success',
+            messages: ['دسته بندی با موفقیت حذف شد!']
+        };
+        expect(response).toEqual(expected);
     })
 
 })
