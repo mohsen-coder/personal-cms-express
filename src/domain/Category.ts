@@ -1,7 +1,8 @@
 export class Category {
-    id?: string
-    parentId?: string
-    title!: string
-    createAt?: Date
-    updateAt?: Date
+    id: string
+    parent: Category
+    children: Category[]
+    title: string
+    createAt: Date
+    updateAt: Date
 }

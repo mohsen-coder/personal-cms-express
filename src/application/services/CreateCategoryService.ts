@@ -5,6 +5,8 @@ import {CategoryResponse} from "../ports/in/response/CategoryResponse";
 import {ResponseStatus} from "../ports/in/response/ResponseStatus";
 import {Messages} from "../../../values/Messages";
 import {Category} from "../../domain/Category";
+import {CategoryModel} from "../../adapters/in/express/model/CategoryModel";
+import {CategoryDAO} from "../ports/out/dao/CategoryDAO";
 
 export class CreateCategoryService implements CreateCategoryUseCase {
 
@@ -15,18 +17,21 @@ export class CreateCategoryService implements CreateCategoryUseCase {
     }
 
     async createCategory(category: Category): Promise<CategoryResponse> {
-        const categoryExist = await this.getCategoryRepo.getCategoryByTitle(category.title)
+        let categoryDAO: CategoryDAO;
+        categoryDAO = await this.getCategoryRepo.getCategoryByTitle(category.title);
 
-        const response = new CategoryResponse()
-        if (categoryExist) {
-            response.status = ResponseStatus.error
-            response.messages.push(Messages.category.get.ExistError.fa)
+        const response = new CategoryResponse();
+        if (categoryDAO.category) {
+            response.status = ResponseStatus.error;
+            response.messages.push(Messages.category.get.ExistError.fa);
             return response;
         }
 
-        response.category = await this.createCategoryRepo.createCategory(category)
-        response.status = ResponseStatus.success
-        response.messages.push(Messages.category.create.Success.fa)
+        categoryDAO = await this.createCategoryRepo.createCategory(category);
+        response.category = new CategoryModel();
+        response.category.fromDomainModel(categoryDAO.category);
+        response.status = ResponseStatus.success;
+        response.messages.push(Messages.category.create.Success.fa);
         return response;
     }
 

@@ -5,6 +5,7 @@ import {CategoryResponse} from "../ports/in/response/CategoryResponse";
 import {Category} from "../../domain/Category";
 import {ResponseStatus} from "../ports/in/response/ResponseStatus";
 import {Messages} from "../../../values/Messages";
+import {CategoryModel} from "../../adapters/in/express/model/CategoryModel";
 
 export class UpdateCategoryService implements UpdateCategoryUseCase {
 
@@ -15,16 +16,19 @@ export class UpdateCategoryService implements UpdateCategoryUseCase {
     }
 
     async updateCategory(category: Category): Promise<CategoryResponse> {
-        const categoryExist = await this.getCategoryRepo.getCategoryById(category.id!)
+        let categoryDAO = await this.getCategoryRepo.getCategoryById(category.id!);
 
         const response = new CategoryResponse();
-        if (!categoryExist) {
+        if (!categoryDAO.category) {
             response.status = ResponseStatus.error;
             response.messages.push(Messages.category.get.NotFoundError.fa);
             return response;
         }
 
-        response.category = await this.updateCategoryRepo.updateCategory(category)
+        categoryDAO = await this.updateCategoryRepo.updateCategory(category);
+
+        response.category = new CategoryModel();
+        response.category.fromDomainModel(categoryDAO.category);
         response.status = ResponseStatus.success;
         response.messages.push(Messages.category.update.Success.fa);
         return response;

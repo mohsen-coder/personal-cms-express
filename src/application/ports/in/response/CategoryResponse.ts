@@ -1,7 +1,8 @@
 import {ResponseBase} from "./ResponseBase";
-import {Category} from "../../../../domain/Category";
+import {CategoryModel} from "../../../../adapters/in/express/model/CategoryModel";
 
 export class CategoryResponse extends ResponseBase{
-    category?: Category
-    categories?: Category[]
+    category: CategoryModel;
+    categories: CategoryModel[];
+    count: number;
 }
