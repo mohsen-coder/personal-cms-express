@@ -101,6 +101,117 @@ export const Messages = {
             }
         }
     },
+    message: {
+        create: {
+            Success: {
+                fa: 'پیغام با موفقیت ارسال شد!'
+            }
+        },
+        get: {
+            NotFoundError: {
+                fa: 'پیغام موجود نیست!'
+            },
+            ParameterError: {
+                fa: 'خطا در پارامتر های ارسالی!'
+            },
+            Success: {
+                fa: 'پیغام با موفقیت دریافت شد!'
+            }
+        },
+        update: {
+            SomethingWentWrongError: {
+                fa: 'خطا در بروز رسانی پیغام!'
+            },
+            Success: {
+                fa: 'پیغام با موفقیت ویرایش شد!'
+            }
+        },
+        delete: {
+            SomethingWentWrongError: {
+                fa: 'خطا در حذف پیغام!'
+            },
+            Success: {
+                fa: 'پیغام با موفقیت حذف شد!'
+            }
+        }
+    },
+    file: {
+        create: {
+            Success: {
+                fa: 'فایل با موفقیت ارسال شد!'
+            }
+        },
+        get: {
+            NotFoundError: {
+                fa: 'فایل موجود نیست!'
+            },
+            ParameterError: {
+                fa: 'خطا در پارامتر های ارسالی!'
+            },
+            Success: {
+                fa: 'فایل با موفقیت دریافت شد!'
+            }
+        },
+        delete: {
+            SomethingWentWrongError: {
+                fa: 'خطا در حذف فایل!'
+            },
+            Success: {
+                fa: 'فایل با موفقیت حذف شد!'
+            }
+        }
+    },
+    comment: {
+        create: {
+            Success: {
+                fa: 'نظر با موفقیت ارسال شد!'
+            }
+        },
+        get: {
+            NotFoundError: {
+                fa: 'نظر موجود نیست!'
+            },
+            ParameterError: {
+                fa: 'خطا در پارامتر های ارسالی!'
+            },
+            Success: {
+                fa: 'نظر با موفقیت دریافت شد!'
+            }
+        },
+        update: {
+            Success: {
+                fa: 'نظر با موفقیت ویرایش شد!'
+            }
+        },
+        delete: {
+            SomethingWentWrongError: {
+                fa: 'خطا در حذف نظر!'
+            },
+            Success: {
+                fa: 'نظر با موفقیت حذف شد!'
+            }
+        }
+    },
+	setting: {
+		create: {
+			Success: {
+				fa: 'تنظیمات با موفقیت ایجادشد'
+			}
+		},
+        get: {
+            Success: {
+                fa: 'تنظیمات با موفقیت دریافت شد!'
+            },
+            NotFoundError: {
+                fa: 'تنظیمات یافت نشد!'
+            }
+        },
+		update: {
+			Success: {
+				fa: 'تنظیمات با موفقیت ویرایش شد!'
+			}
+		}
+	},
     login: {
         UsernameError: {
             fa: 'نام کاربری اشتباه می باشد!'
