@@ -1,7 +1,8 @@
 import {ResponseBase} from "./ResponseBase";
-import {Post} from "../../../../domain/Post";
+import {PostModel} from "../../../../adapters/in/express/model/PostModel";
 
 export class PostResponse extends ResponseBase {
-    post?: Post
-    posts?: Post[]
+    post: PostModel;
+    posts: PostModel[];
+    count: number;
 }

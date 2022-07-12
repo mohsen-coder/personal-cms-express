@@ -5,11 +5,25 @@ import {trim, toString, toNumber} from "lodash";
 export function GetPostMiddleware(getPostUseCase: GetPostUseCase) {
     return async (request: Request, response: Response) => {
         const data:
-            { id?: string | undefined, categoryId?: string | undefined, pagination?: { offset: number, limit: number } }
+            {
+                id?: string,
+                postTitle?: string,
+                categoryId?: string,
+                categoryTitle?: string,
+                status?: string,
+                like?: boolean,
+                view?: boolean,
+                pagination?: { offset: number, limit: number }
+            }
             = {}
 
         if (request.query.id) data.id = trim(toString(request.query.id));
+        if (request.query.postTitle) data.postTitle = trim(toString(request.query.postTitle));
         if (request.query.categoryId) data.categoryId = trim(toString(request.query.categoryId));
+        if (request.query.categoryTitle) data.categoryTitle = trim(toString(request.query.categoryTitle));
+        if (request.query.status) data.status = trim(toString(request.query.status));
+        if (request.query.like) data.like = true;
+        if (request.query.view) data.view = true;
         if (request.query.offset && request.query.limit)
             data.pagination = {
                 offset: toNumber(request.query.offset),

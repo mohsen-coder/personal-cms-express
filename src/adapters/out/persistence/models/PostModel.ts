@@ -20,55 +20,55 @@ import {PostStatus} from "../../../../domain/PostStatus";
 @Entity()
 export class PostModel extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
-    id?: string
+    id: string;
 
-    @OneToOne(() => FileModel, {nullable: true})
+    @OneToOne(() => FileModel, {nullable: true, onDelete: "CASCADE"})
     @JoinColumn()
-    thumbnail?: FileModel
+    thumbnail: FileModel | null;
 
-    @Column() title!: string
-    @Column() content!: string
-    @Column() fullContent!: string
+    @Column() title: string;
+    @Column({type: "text"}) content: string;
+    @Column({type: "text"}) fullContent: string;
 
-    @ManyToMany(() => CategoryModel, category => category.post, {nullable: true})
+    @ManyToMany(() => CategoryModel, category => category.post, {nullable: true, onDelete: "NO ACTION"})
     @JoinTable()
-    categories?: CategoryModel[]
+    categories: CategoryModel[] | null;
 
     @Column({type: 'simple-array'})
-    tags?: string[]
+    tags: string[];
 
-    @OneToMany(() => CommentModel, (comment) => comment.post, {nullable: true})
+    @OneToMany(() => CommentModel, (comment) => comment.post, {nullable: true, onDelete: "CASCADE"})
     @JoinColumn()
-    comments?: CommentModel[]
+    comments: CommentModel[] | null;
 
-    @ManyToOne(() => AccountModel, account => account.posts)
-    author!: AccountModel
+    @ManyToOne(() => AccountModel, account => account.posts, {onDelete: "NO ACTION"})
+    author: AccountModel;
 
-    @Column({nullable: true, default: 0}) view!: number
-    @Column({nullable: true, default: 0}) like!: number
-    //
-    @Column({nullable: true}) publishDate?: Date
-    @Column({nullable: true}) status!: string
+    @Column({default: 0}) view: number;
+    @Column({default: 0}) like: number;
+    @Column() publishDate: Date;
+    @Column() status: string;
 
-    @CreateDateColumn() createAt!: Date
-    @UpdateDateColumn() updateAt!: Date
+    @CreateDateColumn() createAt: Date;
+    @UpdateDateColumn() updateAt: Date;
 
     toDomainModel(): Post {
         const post = new Post()
-        post.id = this.id
-        if(this.thumbnail) post.thumbnail = this.thumbnail.toDomainModel();
-        post.title = this.title
-        post.content = this.content
-        post.fullContent = this.fullContent
-        post.categories = this.categories?.map(category => category.toDomainModel())
-        post.tags = this.tags
-        post.comments = this.comments?.map(comment => comment.toDomainModel())
-        post.author = this.author.toDomainModel()
-        post.view = this.view
-        post.like = this.like
-        post.publishDate = this.publishDate
-        post.createAt = this.createAt
-        post.updateAt = this.updateAt
+
+        if (this.id) post.id = this.id;
+        if (this.thumbnail) post.thumbnail = this.thumbnail.toDomainModel();
+        if (this.title) post.title = this.title;
+        if (this.content) post.content = this.content;
+        if (this.fullContent) post.fullContent = this.fullContent;
+        if (this.categories) post.categories = this.categories.map(category => category.toDomainModel());
+        if (this.tags) post.tags = this.tags;
+        if (this.comments) post.comments = this.comments.map(commentArg => commentArg.toDomainModel());
+        if (this.author) post.author = this.author.toDomainModel();
+        if (this.view) post.view = this.view;
+        if (this.like) post.like = this.like;
+        if (this.publishDate) post.publishDate = this.publishDate;
+        if (this.createAt) post.createAt = this.createAt;
+        if (this.updateAt) post.updateAt = this.updateAt;
 
         switch (this.status) {
             case "publish":
