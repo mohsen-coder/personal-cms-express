@@ -1,39 +1,53 @@
-import {BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    PrimaryColumn,
+} from "typeorm";
 import {File} from "../../../../domain/File";
-import {FileType} from "../../../../domain/FileType";
+import {FileMimeType} from "../../../../domain/FileMimeType";
 
 @Entity()
 export class FileModel extends BaseEntity {
-    @PrimaryGeneratedColumn("uuid") id!: string
-    @Column() size!: string
-    @Column() title!: string
-    @Column() meme!: string
-    @Column() fileType!: string
-    @CreateDateColumn() createAt!: Date
+    @PrimaryColumn({unique: true, nullable: false}) id: string;
+    @Column() size: string;
+    @Column() name: string;
+    @Column() mimeType: string;
+    @CreateDateColumn() createAt: Date;
 
     toDomainModel(): File {
-        const file = new File()
-        file.id = this.id!
-        file.size = this.size
-        file.title = this.title
-        file.meme = this.meme
-        file.createAt = this.createAt
+        const file = new File();
 
-        switch (this.fileType) {
-            case "jpg":
-                file.fileType = FileType.jpg;
+        if (this.id) file.id = this.id;
+        if (this.size) file.size = this.size;
+        if (this.name) file.name = this.name;
+        if (this.createAt) file.createAt = this.createAt;
+
+        switch (this.mimeType) {
+            case "image/jpeg":
+                file.mimeType = FileMimeType.jpg;
                 break;
-            case "jpeg":
-                file.fileType = FileType.jpeg;
+            case "image/png":
+                file.mimeType = FileMimeType.png;
                 break;
-            case "png":
-                file.fileType = FileType.png;
+            case "image/gif":
+                file.mimeType = FileMimeType.gif;
                 break;
-            case "gif":
-                file.fileType = FileType.gif;
+            case "application/pdf":
+                file.mimeType = FileMimeType.pdf;
+                break;
+            case "application/zip":
+                file.mimeType = FileMimeType.zip;
+                break;
+            case "text/plain":
+                file.mimeType = FileMimeType.text;
+                break;
+            case "application/vnd.rar":
+                file.mimeType = FileMimeType.rar;
                 break;
             default:
-                file.fileType = FileType.none;
+                file.mimeType = FileMimeType.none;
         }
 
         return file;

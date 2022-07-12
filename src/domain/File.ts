@@ -1,10 +1,9 @@
-import {FileType} from "./FileType";
+import {FileMimeType} from "./FileMimeType";
 
 export class File {
-    id?: string
-    size?: string
-    title?: string
-    meme?: string
-    fileType?: FileType
-    createAt?: Date
+    id: string
+    size: string
+    name: string
+    mimeType: FileMimeType
+    createAt: Date
 }

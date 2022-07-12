@@ -1,7 +1,10 @@
-export enum FileType{
+export enum FileMimeType{
     none = "none",
-    jpg = "jpg",
-    jpeg = "jpeg",
-    png = "png",
-    gif = "gif"
+    jpg = "image/jpeg",
+    png = "image/png",
+    gif = "image/gif",
+    pdf = "application/pdf",
+    zip = "application/zip",
+    text = "text/plain",
+    rar = "application/vnd.rar"
 }
