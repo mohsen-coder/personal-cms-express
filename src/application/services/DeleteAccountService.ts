@@ -14,12 +14,12 @@ export class DeleteAccountService implements DeleteAccountUseCase {
     }
 
     async deleteAccount(
-        request: { accountId?: string, username?: string, email?: string }
+        request: { id?: string, username?: string, email?: string }
     ): Promise<ResponseBase> {
         const response = new ResponseBase()
         let isDeleteSuccessful;
 
-        if (request.accountId) isDeleteSuccessful = await this.deleteAccountRepo.deleteAccountById(request.accountId)
+        if (request.id) isDeleteSuccessful = await this.deleteAccountRepo.deleteAccountById(request.id)
         else if (request.email) isDeleteSuccessful = await this.deleteAccountRepo.deleteAccountByEmail(request.email)
         else if (request.username) isDeleteSuccessful = await this.deleteAccountRepo.deleteAccountByUsername(request.username)
 

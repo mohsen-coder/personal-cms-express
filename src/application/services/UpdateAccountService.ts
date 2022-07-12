@@ -5,6 +5,7 @@ import {Account} from "../../domain/Account";
 import {GetAccountPort} from "../ports/out/GetAccountPort";
 import {ResponseStatus} from "../ports/in/response/ResponseStatus";
 import {Messages} from "../../../values/Messages";
+import {AccountModel} from "../../adapters/in/express/model/AccountModel";
 
 export class UpdateAccountService implements UpdateAccountUseCase {
 
@@ -15,19 +16,21 @@ export class UpdateAccountService implements UpdateAccountUseCase {
     }
 
     async updateAccount(account: Account): Promise<AccountResponse> {
-
-        const accountExist = await this.getAccountRepo.getAccountById(account.id!)
+        let accountDAO = await this.getAccountRepo.getAccountById(account.id!)
 
         const response = new AccountResponse()
-        if (!accountExist) {
+        if (!accountDAO.account) {
             response.status = ResponseStatus.error
             response.messages.push(Messages.account.get.NotFoundError.fa)
             return response;
         }
 
-        response.account = await this.updateAccountRepo.updateAccount(account)
-        response.status = ResponseStatus.success
-        response.messages.push(Messages.account.update.Success.fa)
+        accountDAO = await this.updateAccountRepo.updateAccount(account);
+
+        response.account = new AccountModel();
+        response.account.fromDomainModel(accountDAO.account);
+        response.status = ResponseStatus.success;
+        response.messages.push(Messages.account.update.Success.fa);
         return response;
     }
 

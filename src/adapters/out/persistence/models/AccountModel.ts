@@ -15,31 +15,32 @@ import {PostModel} from "./PostModel";
 
 @Entity()
 export class AccountModel extends BaseEntity {
-    @PrimaryGeneratedColumn("uuid") id?: string
-    @Column() name!: string
-    @Column() family!: string
-    @Column() email!: string
-    @Column({unique: true}) username!: string
-    @Column() password!: string
-    @Column({nullable: true}) about?: string
-    @OneToOne(() => FileModel, {nullable: true}) @JoinColumn() thumbnail?: FileModel
-    @Column() role!: string
-    @OneToMany(() => PostModel, post => post.author, {nullable: true}) posts?: PostModel[]
-    @CreateDateColumn() createAt!: Date
-    @UpdateDateColumn() updateAt!: Date
+    @PrimaryGeneratedColumn("uuid") id: string
+    @Column() name: string;
+    @Column() family: string;
+    @Column() email: string;
+    @Column({unique: true}) username: string
+    @Column() password: string;
+    @Column({nullable: true, type: "text"}) about: string;
+    @OneToOne(() => FileModel, {nullable: true, onDelete: "CASCADE"}) @JoinColumn() thumbnail: FileModel | null;
+    @Column() role: string;
+    @OneToMany(() => PostModel, post => post.author, {nullable: true, onDelete: "NO ACTION"}) posts: PostModel[];
+    @CreateDateColumn() createAt: Date;
+    @UpdateDateColumn() updateAt: Date;
 
     toDomainModel(): Account {
         const account = new Account()
-        account.id = this.id!
-        account.name = this.name;
-        account.family = this.family;
-        account.email = this.email;
-        account.username = this.username;
-        account.password = this.password;
-        account.about = this.about
-        if(this.thumbnail) account.thumbnail = this.thumbnail.toDomainModel();
-        account.createAt = this.createAt;
-        account.updateAt = this.updateAt;
+
+        if (this.id) account.id = this.id;
+        if (this.name) account.name = this.name;
+        if (this.family) account.family = this.family;
+        if (this.email) account.email = this.email;
+        if (this.username) account.username = this.username;
+        if (this.password) account.password = this.password;
+        if (this.about) account.about = this.about;
+        if (this.thumbnail) account.thumbnail = this.thumbnail.toDomainModel();
+        if (this.createAt) account.createAt = this.createAt;
+        if (this.updateAt) account.updateAt = this.updateAt;
 
         switch (this.role) {
             case "admin":
@@ -54,4 +55,5 @@ export class AccountModel extends BaseEntity {
 
         return account;
     }
+
 }

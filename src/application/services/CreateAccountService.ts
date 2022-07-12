@@ -19,12 +19,12 @@ export class CreateAccountService implements RegisterUseCase {
 
     async register(accountArg: Account): Promise<ResponseBase> {
 
-        const emailExist = await this.getAccountRepo.getAccountByEmail(accountArg.email!)
-        const username = await this.getAccountRepo.getAccountByUsername(accountArg.username!)
+        const accountDAOByEmail = await this.getAccountRepo.getAccountByEmail(accountArg.email!)
+        const accountDAOByUsername = await this.getAccountRepo.getAccountByUsername(accountArg.username!)
 
         const response = new ResponseBase()
 
-        if (emailExist || username) {
+        if (accountDAOByEmail.account || accountDAOByUsername.account) {
             response.status = ResponseStatus.error;
             response.messages.push(Messages.account.get.ExistError.fa)
             return response;

@@ -1,7 +1,8 @@
 import {ResponseBase} from "./ResponseBase";
-import {Account} from "../../../../domain/Account";
+import {AccountModel} from "../../../../adapters/in/express/model/AccountModel";
 
 export class AccountResponse extends ResponseBase {
-    account?: Account
-    accounts?: Account[]
+    account: AccountModel;
+    accounts: AccountModel[];
+    count: number;
 }
