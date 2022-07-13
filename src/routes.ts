@@ -1,31 +1,173 @@
-import {Router} from "express";
+import { Router } from "express";
 import {
-    createCategoryMiddleware,
-    createPostMiddleware,
-    deleteAccountMiddleware, deleteCategoryMiddleware, deletePostMiddleware,
-    getAccountMiddleware, getCategoryMiddleware, getPostMiddleware,
-    loginMiddleware,
-    registerMiddleware,
-    registerValidationMiddleware,
-    updateAccountMiddleware, updateCategoryMiddleware, updatePostMiddleware
+	createCategoryMiddleware,
+	createCategoryValidationMiddleware,
+	createCommentMiddleware,
+	createCommentValidationMiddleware,
+	createMessageMiddleware,
+	createMessageValidationMiddleware,
+	createPostMiddleware,
+	createPostValidationMiddleware,
+	deleteAccountMiddleware,
+	deleteAccountValidationMiddleware,
+	deleteCategoryMiddleware,
+	deleteCategoryValidationMiddleware,
+	deleteCommentMiddleware,
+	deleteCommentValidationMiddleware,
+	deleteFileMiddleware,
+	deleteMessageMiddleware,
+	deleteMessageValidationMiddleware,
+	deletePostMiddleware,
+	deletePostValidationMiddleware,
+	getAccountMiddleware,
+	getAccountValidationMiddleware,
+	getCategoryMiddleware,
+	getCategoryValidationMiddleware,
+	getCommentMiddleware,
+	getCommentValidationMiddleware,
+	getFileMiddleware,
+	getMessageMiddleware,
+	getMessageValidationMiddleware,
+	getPostMiddleware,
+	getPostValidationMiddleware,
+	getSettingMiddleware,
+	loginMiddleware,
+	loginValidationMiddleware,
+	registerMiddleware,
+	registerValidationMiddleware,
+	tokenValidationMiddleware,
+	tokenValidationMiddlewareFinal,
+	updateAccountMiddleware,
+	updateAccountValidationMiddleware,
+	updateCategoryMiddleware,
+	updateCategoryValidationMiddleware,
+	updateCommentMiddleware,
+	updateCommentValidationMiddleware,
+	updateMessageMiddleware,
+	updateMessageValidationMiddleware,
+	updatePostMiddleware,
+	updatePostValidationMiddleware,
+	updateSettingMiddleware,
+	uploadFileMiddleware,
+	uploadFileValidationMiddleware,
 } from "./Config";
 
-const router = Router()
+const router = Router();
 
-router.post('/register', registerValidationMiddleware, registerMiddleware)
-router.post('/login', loginMiddleware)
-router.get('/account', getAccountMiddleware)
-router.put('/account/update', updateAccountMiddleware)
-router.delete('/account', deleteAccountMiddleware)
+router.post("/register", registerValidationMiddleware, registerMiddleware);
+router.post("/login", loginValidationMiddleware, loginMiddleware);
+router.get(
+	"/account",
+	getAccountValidationMiddleware,
+	getAccountMiddleware
+);
+router.put(
+	"/account",
+	updateAccountValidationMiddleware,
+	tokenValidationMiddleware,
+	updateAccountMiddleware
+);
+router.delete(
+	"/account",
+	deleteAccountValidationMiddleware,
+	tokenValidationMiddleware,
+	deleteAccountMiddleware
+);
+router.post("/token/validate", tokenValidationMiddlewareFinal);
 
-router.post('/category', createCategoryMiddleware)
-router.get('/category', getCategoryMiddleware)
-router.put('/category', updateCategoryMiddleware)
-router.delete('/category/:id', deleteCategoryMiddleware)
+router.post(
+	"/category",
+	createCategoryValidationMiddleware,
+	tokenValidationMiddleware,
+	createCategoryMiddleware
+);
+router.get("/category", getCategoryValidationMiddleware, getCategoryMiddleware);
+router.put(
+	"/category",
+	updateCategoryValidationMiddleware,
+	tokenValidationMiddleware,
+	updateCategoryMiddleware
+);
+router.delete(
+	"/category/:id",
+	deleteCategoryValidationMiddleware,
+	tokenValidationMiddleware,
+	deleteCategoryMiddleware
+);
 
-router.post('/post', createPostMiddleware)
-router.get('/post', getPostMiddleware)
-router.put('/post', updatePostMiddleware)
-router.delete('/post/:id', deletePostMiddleware)
+router.post(
+	"/post",
+	createPostValidationMiddleware,
+	tokenValidationMiddleware,
+	createPostMiddleware
+);
+router.get("/post", getPostValidationMiddleware, getPostMiddleware);
+router.put(
+	"/post",
+	updatePostValidationMiddleware,
+	tokenValidationMiddleware,
+	updatePostMiddleware
+);
+router.delete(
+	"/post/:id",
+	deletePostValidationMiddleware,
+	tokenValidationMiddleware,
+	deletePostMiddleware
+);
 
-export {router};
+router.post(
+	"/file",
+	uploadFileValidationMiddleware,
+	tokenValidationMiddleware,
+	uploadFileMiddleware
+);
+router.get("/file", getFileMiddleware);
+router.delete("/file/:id", tokenValidationMiddleware, deleteFileMiddleware);
+
+router.post(
+	"/message",
+	createMessageValidationMiddleware,
+	createMessageMiddleware
+);
+router.get(
+	"/message",
+	getMessageValidationMiddleware,
+	tokenValidationMiddleware,
+	getMessageMiddleware
+);
+router.put(
+	"/message",
+	updateMessageValidationMiddleware,
+	tokenValidationMiddleware,
+	updateMessageMiddleware
+);
+router.delete(
+	"/message/:id",
+	deleteMessageValidationMiddleware,
+	tokenValidationMiddleware,
+	deleteMessageMiddleware
+);
+
+router.post(
+	"/comment",
+	createCommentValidationMiddleware,
+	createCommentMiddleware
+);
+router.get("/comment", getCommentValidationMiddleware, getCommentMiddleware);
+router.put(
+	"/comment",
+	updateCommentValidationMiddleware,
+	tokenValidationMiddleware,
+	updateCommentMiddleware
+);
+router.delete(
+	"/comment/:id",
+	deleteCommentValidationMiddleware,
+	tokenValidationMiddleware,
+	deleteCommentMiddleware
+);
+
+router.get('/setting', getSettingMiddleware);
+router.put("/setting", updateSettingMiddleware);
+
+export { router };
