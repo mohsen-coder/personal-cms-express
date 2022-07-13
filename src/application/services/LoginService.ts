@@ -18,26 +18,30 @@ export class LoginService implements LoginUseCase {
     async login(request: { username: string; password: string }): Promise<LoginResponse> {
         const loginResponse = new LoginResponse();
 
-        const account = await this.accountRepo.getAccountByUsername(request.username);
-        if (!account) {
-            loginResponse.status = ResponseStatus.error
-            loginResponse.messages.push(Messages.login.UsernameError.fa)
+        const accountDAO = await this.accountRepo.getAccountByUsername(request.username);
+        if (!accountDAO.account) {
+            loginResponse.status = ResponseStatus.error;
+            loginResponse.messages.push(Messages.login.UsernameError.fa);
             return loginResponse;
         }
 
-        if (!this.BcryptUtil.comparePassword(request.password, account.password!)) {
-            loginResponse.status = ResponseStatus.error
-            loginResponse.messages.push(Messages.login.PasswordError.fa)
+        if (!this.BcryptUtil.comparePassword(request.password, accountDAO.account.password!)) {
+            loginResponse.status = ResponseStatus.error;
+            loginResponse.messages.push(Messages.login.PasswordError.fa);
             return loginResponse;
         }
 
 
         loginResponse.token = this.JWTUtil.generateToken({
-            username: account.username,
-            role: account.role
-        }, '1h')
-        loginResponse.status = ResponseStatus.success
-        loginResponse.messages.push(Messages.login.Success.fa)
+            accountId: accountDAO.account.id,
+            username: accountDAO.account.username,
+            name: accountDAO.account.name,
+            family: accountDAO.account.family,
+            email: accountDAO.account.email,
+            role: accountDAO.account.role
+        }, '12h');
+        loginResponse.status = ResponseStatus.success;
+        loginResponse.messages.push(Messages.login.Success.fa);
         return loginResponse;
     }
 }
